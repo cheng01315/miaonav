@@ -4,7 +4,7 @@
 
 .text-main-500{
   --tw-text-opacity: 1;
-  color: rgba(11, 166, 101, var(--tw-text-opacity)) 
+  color: rgba(37, 99, 235, var(--tw-text-opacity)) 
 }
 .dark{
   --tw-bg-opacity: 1;
@@ -15,7 +15,7 @@
     /* background-color: rgba(243, 244, 246, var(--tw-bg-opacity)); bg-gray-100 */
     background-color: rgba(156, 163, 175, var(--tw-bg-opacity)); /* bg-gray-400 */
     --tw-text-opacity: 1;
-    color: rgba(11, 166, 101, var(--tw-text-opacity)) /* text-indigo-500 */
+    color: rgba(37, 99, 235, var(--tw-text-opacity)) /* text-indigo-500 */
 
   }
 
@@ -40,7 +40,7 @@
 
   
   :root {
-    --folderColor: #3CB884;
+    --folderColor: #3B82F6;
     --paperColor: #ffffff;
   }
   
@@ -54,7 +54,7 @@
   }
   
   .folder__back {
-    fill: #0BA665;
+    fill: #2563EB;
     rx: 10;
     ry: 10;
   }
@@ -126,7 +126,7 @@
   }
 
   .loader {
-    border-top-color: #0BA665; /* You can change this color as needed */
+    border-top-color: #2563EB; /* You can change this color as needed */
     -webkit-animation: spin 1s linear infinite;
     animation: spin 1s linear infinite;
   }
@@ -224,4 +224,326 @@
     --tw-bg-opacity: 1;
     --tw-ring-color: rgb(45 49 57 / var(--tw-bg-opacity));
   }
+
+
+  /* ================================================
+     迷鹿风格改造新增样式（section / 标签 / 卡片 / 详情页）
+     ================================================ */
+
+  /* ---- 侧边栏导航项 ---- */
+  .mn-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.5;
+    color: rgb(55 65 81);
+    cursor: pointer;
+    transition: background-color .15s, color .15s;
+  }
+
+  .mn-nav-item:hover {
+    background-color: rgb(249 250 251);
+    color: #2563EB;
+  }
+
+  .mn-nav-item.active {
+    background-color: rgba(37, 99, 235, 0.12);
+    color: #2563EB;
+  }
+
+  .mn-nav-icon {
+    font-size: 1rem;
+    width: 1.25rem;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .mn-nav-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dark .mn-nav-item {
+    color: rgb(156 163 175);
+  }
+
+  .dark .mn-nav-item:hover {
+    background-color: rgb(34 37 42);
+    color: #60A5FA;
+  }
+
+  .dark .mn-nav-item.active {
+    background-color: rgba(96, 165, 250, 0.15);
+    color: #60A5FA;
+  }
+
+  /* ---- 分类区块 ---- */
+  .mn-section {
+    margin-bottom: 2.5rem;
+    scroll-margin-top: 5rem;
+  }
+
+  .mn-section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .mn-section-icon {
+    font-size: 1.125rem;
+  }
+
+  .mn-section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: rgb(31 41 55);
+  }
+
+  .dark .mn-section-title {
+    color: rgb(229 231 235);
+  }
+
+  .mn-section-count {
+    font-size: 0.75rem;
+    color: rgb(156 163 175);
+    font-weight: 400;
+  }
+
+  /* ---- 标签行 ---- */
+  .mn-tags-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.875rem;
+  }
+
+  .mn-tags {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    flex: 1;
+    min-width: 0;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .mn-tags::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mn-tag {
+    flex-shrink: 0;
+    padding: 0.3125rem 0.875rem;
+    border-radius: 9999px;
+    border: 1px solid rgb(229 231 235);
+    background: #ffffff;
+    color: rgb(75 85 99);
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+  }
+
+  .mn-tag:hover {
+    border-color: #2563EB;
+    color: #2563EB;
+  }
+
+  .mn-tag.active {
+    background: #2563EB;
+    border-color: #2563EB;
+    color: #ffffff;
+  }
+
+  .dark .mn-tag {
+    background: rgb(34 37 42);
+    border-color: rgb(45 49 57);
+    color: rgb(156 163 175);
+  }
+
+  .dark .mn-tag:hover {
+    border-color: #60A5FA;
+    color: #60A5FA;
+  }
+
+  .dark .mn-tag.active {
+    background: #2563EB;
+    border-color: #2563EB;
+    color: #ffffff;
+  }
+
+  /* ---- 三级联动标签行（展开动画） ---- */
+  .mn-subtags-row {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .25s ease, margin-bottom .25s ease;
+  }
+
+  .mn-subtags-row.open {
+    max-height: 3.25rem;
+    margin-bottom: 0.875rem;
+  }
+
+  .mn-subtags-row .mn-tag {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  /* ---- 查看更多按钮（固定行尾） ---- */
+  .mn-view-more {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #2563EB;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.3125rem 0;
+    white-space: nowrap;
+  }
+
+  .mn-view-more:hover {
+    color: #1D4ED8;
+    text-decoration: underline;
+  }
+
+  .dark .mn-view-more {
+    color: #60A5FA;
+  }
+
+  .dark .mn-view-more:hover {
+    color: #93C5FD;
+  }
+
+  /* ---- 卡片网格 ---- */
+  .mn-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .mn-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.875rem;
+    background: #ffffff;
+    border: 1px solid rgb(229 231 235);
+    border-radius: 0.75rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: box-shadow .15s ease, transform .15s ease, border-color .15s ease;
+  }
+
+  .mn-card:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+    border-color: rgba(37, 99, 235, 0.4);
+  }
+
+  .dark .mn-card {
+    background: rgb(34 37 42);
+    border-color: rgb(45 49 57);
+  }
+
+  .dark .mn-card:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+    border-color: rgba(96, 165, 250, 0.35);
+  }
+
+  .mn-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 0.5rem;
+    background-color: rgb(129 132 138 / 10%);
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  .mn-card-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mn-card-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: rgb(31 41 55);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dark .mn-card-title {
+    color: rgb(229 231 235);
+  }
+
+  .mn-card-desc {
+    font-size: 0.75rem;
+    color: rgb(107 114 128);
+    line-height: 1.25;
+    margin-top: 2px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .dark .mn-card-desc {
+    color: rgb(156 163 175);
+  }
+
+  /* ---- 详情页 ---- */
+  .mn-detail-titlebar {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .mn-detail-title {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: rgb(31 41 55);
+  }
+
+  .dark .mn-detail-title {
+    color: rgb(229 231 235);
+  }
+
+  .mn-group {
+    margin-bottom: 1.75rem;
+  }
+
+  .mn-group-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: rgb(55 65 81);
+    margin-bottom: 0.75rem;
+    padding-left: 0.5rem;
+    border-left: 3px solid #2563EB;
+    scroll-margin-top: 5.5rem;
+  }
+
+  .dark .mn-group-title {
+    color: rgb(209 213 219);
+    border-left-color: #60A5FA;
+  }
+
+  .mn-group .mn-grid {
+    margin-bottom: 0.25rem;
+  }
+
 

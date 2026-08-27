@@ -1430,9 +1430,9 @@ select {
   background-color: rgb(17 24 39 / 0.8);
 }
 
-.bg-green-600 {
+.bg-blue-600 {
   --tw-bg-opacity: 1;
-  background-color: rgb(22 163 74 / var(--tw-bg-opacity));
+  background-color: rgb(37 99 235 / var(--tw-bg-opacity));
 }
 
 .bg-white {
@@ -1792,7 +1792,7 @@ select {
 
 .text-main-500{
   --tw-text-opacity: 1;
-  color: rgba(11, 166, 101, var(--tw-text-opacity))
+  color: rgba(37, 99, 235, var(--tw-text-opacity))
 }
 
 .dark{
@@ -1806,7 +1806,7 @@ select {
   background-color: rgba(156, 163, 175, var(--tw-bg-opacity));
   /* bg-gray-400 */
   --tw-text-opacity: 1;
-  color: rgba(11, 166, 101, var(--tw-text-opacity))
+  color: rgba(37, 99, 235, var(--tw-text-opacity))
   /* text-indigo-500 */
 }
 
@@ -1829,7 +1829,7 @@ select {
 }
 
 :root {
-  --folderColor: #3CB884;
+  --folderColor: #3B82F6;
   --paperColor: #ffffff;
 }
 
@@ -1843,7 +1843,7 @@ select {
 }
 
 .folder__back {
-  fill: #0BA665;
+  fill: #2563EB;
   rx: 10;
   ry: 10;
 }
@@ -1917,7 +1917,7 @@ select {
 }
 
 .loader {
-  border-top-color: #0BA665;
+  border-top-color: #2563EB;
   /* You can change this color as needed */
   animation: spin 1s linear infinite;
 }
@@ -2026,9 +2026,9 @@ select {
   background-color: rgb(249 250 251 / var(--tw-bg-opacity));
 }
 
-.hover\:bg-green-700:hover {
+.hover\:bg-blue-700:hover {
   --tw-bg-opacity: 1;
-  background-color: rgb(21 128 61 / var(--tw-bg-opacity));
+  background-color: rgb(29 78 216 / var(--tw-bg-opacity));
 }
 
 .hover\:text-gray-500:hover {
@@ -2148,18 +2148,18 @@ select {
   outline-offset: 2px;
 }
 
-.focus-visible\:outline-green-600:focus-visible {
-  outline-color: #16a34a;
+.focus-visible\:outline-blue-600:focus-visible {
+  outline-color: #2563eb;
 }
 
-.active\:bg-green-700:active {
+.active\:bg-blue-700:active {
   --tw-bg-opacity: 1;
-  background-color: rgb(21 128 61 / var(--tw-bg-opacity));
+  background-color: rgb(29 78 216 / var(--tw-bg-opacity));
 }
 
-.active\:text-green-100:active {
+.active\:text-blue-100:active {
   --tw-text-opacity: 1;
-  color: rgb(220 252 231 / var(--tw-text-opacity));
+  color: rgb(219 234 254 / var(--tw-text-opacity));
 }
 
 .group:hover .group-hover\:translate-x-1 {
@@ -2352,20 +2352,20 @@ select {
 }
 
 @media(prefers-color-scheme:dark) {
-  .\[\@media\(prefers-color-scheme\:dark\)\]\:fill-teal-50 {
-    fill: #f0fdfa;
+  .\[\@media\(prefers-color-scheme\:dark\)\]\:fill-blue-50 {
+    fill: #eff6ff;
   }
 
-  .\[\@media\(prefers-color-scheme\:dark\)\]\:stroke-teal-500 {
-    stroke: #14b8a6;
+  .\[\@media\(prefers-color-scheme\:dark\)\]\:stroke-blue-500 {
+    stroke: #3b82f6;
   }
 
-  .group:hover .\[\@media\(prefers-color-scheme\:dark\)\]\:group-hover\:fill-teal-50 {
-    fill: #f0fdfa;
+  .group:hover .\[\@media\(prefers-color-scheme\:dark\)\]\:group-hover\:fill-blue-50 {
+    fill: #eff6ff;
   }
 
-  .group:hover .\[\@media\(prefers-color-scheme\:dark\)\]\:group-hover\:stroke-teal-600 {
-    stroke: #0d9488;
+  .group:hover .\[\@media\(prefers-color-scheme\:dark\)\]\:group-hover\:stroke-blue-600 {
+    stroke: #2563eb;
   }
 
   .group:hover .\[\@media\(prefers-color-scheme\:dark\)\]\:group-hover\:stroke-zinc-400 {
@@ -2374,12 +2374,12 @@ select {
 }
 
 @media not (prefers-color-scheme:dark) {
-  .\[\@media_not_\(prefers-color-scheme\:dark\)\]\:fill-teal-400\/10 {
-    fill: rgb(45 212 191 / 0.1);
+  .\[\@media_not_\(prefers-color-scheme\:dark\)\]\:fill-blue-400\/10 {
+    fill: rgb(96 165 250 / 0.1);
   }
 
-  .\[\@media_not_\(prefers-color-scheme\:dark\)\]\:stroke-teal-500 {
-    stroke: #14b8a6;
+  .\[\@media_not_\(prefers-color-scheme\:dark\)\]\:stroke-blue-500 {
+    stroke: #3b82f6;
   }
 }
 
