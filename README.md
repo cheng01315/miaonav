@@ -5,7 +5,7 @@
 > 一个由浏览器书签一键生成的「精选工具网站导航页」，支持分类平铺、标签联动筛选、暗色模式与本地可视化编辑。
 
 - 🌐 在线演示：**https://www.meowtool.com/miaonav**
-- 🍴 项目派生自：**https://github.com/Pintree-io/pintree/tree/pintree-old-pages**（Pintree 旧版页面分支）
+- 🍴 项目派生自：**https://github.com/Pintree-io/pintree/tree/pintree-old-pages**  （Pintree 旧版页面分支）
 - ✍️ 作者：Cheng
 
 ---
