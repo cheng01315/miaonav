@@ -22,6 +22,38 @@ This project is a derivative work built on the **Pintree** `pintree-old-pages` b
 
 ## 2. Differences from the original Pintree (what's new)
 
+### V1.0.1
+
+Release Date: 2026.9.3
+
+**1. Mobile Search Box (New)**
+
+- Added a **sticky search bar** (`lg:hidden`, visible only on small screens) below the top bar, featuring a search icon + a "Clear" button, with search triggered by pressing Enter.
+- Logic reuses the desktop `searchBookmarks` / `clearSearchResults` functions, with **input content synced across both ends**; clearing one also clears the other.
+- Detail tweaks: The magnifying glass icon first received `my-auto` to fix vertical centering, and was then **completely removed** as per your request, with left padding reduced from `pl-9` to `pl-4` for a cleaner look.
+- Also addresses a historical gap: the 640–1024px range previously had no search box at all, now covered by this mobile search bar.
+
+**2. Mobile Card Layout (New Adaptation)**
+
+- Within `@media (max-width:640px)`, changed the grid from `auto-fill minmax(210px,1fr)` to a fixed **`repeat(2, 1fr)`**, i.e., 2 cards per row on phones.
+- Supporting adjustments: reduced card padding, icon size (40→32px), and description truncated to 1 line; category jump `scroll-margin-top` adjusted to 8.5rem to prevent titles from being obscured by the sticky search bar.
+
+**3. SEO (Basic Completion)**
+
+- The homepage previously had **no H1 at all**; the desktop sidebar brand name "Meow Tools Collection" has been upgraded to the **page's single `<h1>`**.
+- The same text in the mobile top bar / drawer menu remains as `<a>` to avoid duplicate H1s diluting SEO weight.
+
+**Files Involved**
+
+- `index.html`: mobile search box DOM, H1 heading
+- `css/styles.css`: mobile 2-column grid + card adaptations
+
+
+
+### V1.0.1
+
+Release Date: 2026.8.27
+
 | Area | Original Pintree (pintree-old-pages) | This fork (miaonav) |
 | --- | --- | --- |
 | Editing data | Must install the "Pintree Bookmarks Exporter" Chrome extension, export a JSON, then manually replace `json/pintree.json` | Ships a **desktop GUI editor** (`Website navigation tool/Website navigation tool.py`) — import Excel/JSON, edit visually, sort, one-click export |
@@ -59,10 +91,6 @@ This project is a derivative work built on the **Pintree** `pintree-old-pages` b
 
 4. **Local & unified icons**
    - The editor auto-downloads site favicons into `assets/logo/`, unifies them to PNG, removing the dependency on third-party realtime services for faster, more stable loads.
-
-5. **Analytics & SEO**
-   - Umami / GA4 / Clarity integrations;
-   - Complete `og:` / `twitter:` share cards and canonical for external promotion.
 
 ---
 

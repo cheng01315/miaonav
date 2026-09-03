@@ -22,6 +22,39 @@
 
 ## 二、与原版 Pintree 的区别（新增功能）
 
+### V1.0.1
+
+发布日期：2026.9.3
+
+**1.移动端搜索框（新增）**
+
+- 在顶栏下方新增**吸顶搜索栏**（`lg:hidden`，仅小屏显示），带搜索图标 + 「清空」按钮，回车即搜。
+- 逻辑复用桌面那套 `searchBookmarks` / `clearSearchResults`，**两端输入框内容同步**，清空时一起清。
+- 细节调整：放大镜先是加了 `my-auto` 修复垂直居中，随后按你的要求**直接移除图标**，左内边距由 `pl-9` 收到 `pl-4`，更干净。
+- 顺带覆盖了一个历史空白：640–1024px 原本没有任何搜索框，现在由这条移动搜索栏接管。
+
+**2.移动端卡片布局（新增适配）**
+
+- `@media (max-width:640px)` 里把网格从 `auto-fill minmax(210px,1fr)` 改成固定 **`repeat(2, 1fr)`**，即手机每行 2 张卡片。
+- 配套收紧：卡片内边距、图标（40→32px）、描述缩成 1 行；分类跳转的 `scroll-margin-top` 调到 8.5rem，免得被吸顶搜索框挡住标题。
+
+**3.SEO（基础补全）**
+
+- 首页原本**完全没有 H1**，已把桌面侧边栏品牌名「喵喵工具集」升级为**全页唯一 `<h1>`**。
+- 移动顶栏 / 抽屉菜单里的同名文字保持 `<a>`，避免重复 H1 稀释权重。
+
+**涉及文件**
+
+- `index.html`：移动端搜索框 DOM、H1 标题
+
+- `css/styles.css`：移动端 2 列网格 + 卡片适配
+
+  
+
+### V1.0.0 
+
+发布日期：2026.8.27
+
 | 维度 | 原版 Pintree（pintree-old-pages） | 本 fork（miaonav） |
 | --- | --- | --- |
 | 数据编辑方式 | 必须安装 Chrome 扩展「Pintree Bookmarks Exporter」导出书签 JSON，再手动替换 `json/pintree.json` | 提供**桌面 GUI 编辑工具**（`Website navigation tool/Website navigation tool.py`），可导入 Excel / JSON、可视化增删改、排序、一键导出 |
@@ -34,9 +67,10 @@
 | 统计与分析 | 无 | 集成 Umami、Google Analytics、Microsoft Clarity |
 | SEO / 合规 | 基础 meta | 完善 canonical / Open Graph / Twitter Card |
 
-### 主要新增能力详解
+#### 主要新增能力详解
 
 1. **桌面可视化编辑工具（`Website navigation tool/Website navigation tool.py`）**
+   
    - 导入 / 导出 Excel（`.xlsx`）与 JSON；
    - 表格化增、删、改网站条目；
    - 搜索与筛选；
@@ -48,7 +82,7 @@
      pip install openpyxl requests pillow
      python "Website navigation tool/Website navigation tool.py"
      ```
-
+   
 2. **首页分类平铺 + 标签联动筛选**
    - 首页按顶层分类分区块展示，每个区块头部显示 emoji 图标与网站总数；
    - 区块内提供二级标签（子分类）行，点击可展开第三级标签，形成二级 / 三级联动；
@@ -59,10 +93,6 @@
 
 4. **图标本地化与统一**
    - 编辑工具自动下载网站 favicon 并落地到 `assets/logo/`，统一转为 PNG，避免依赖第三方实时服务、提升加载速度与稳定性。
-
-5. **统计与 SEO**
-   - 接入 Umami / GA4 / Clarity 三套分析；
-   - 完善 `og:` / `twitter:` 分享卡片与 canonical，便于对外推广。
 
 ---
 

@@ -103,7 +103,7 @@
         class="flex flex-col border-r border-gray-200 dark:pintree-border-gray-800 bg-white px-4 h-full font-semibold dark:pintree-bg-gray-900">
         <div class="flex p-0 h-16 shrink-0 items-center">
           <img class="pl-2 h-8 w-auto" src="assets/logo.svg" alt="喵喵工具集" loading="lazy" decoding="async">
-          <a href="" class="ml-4 font-extrabold text-2xl dark:text-white">喵喵工具集</a>
+          <h1 class="ml-4 m-0"><a href="" class="font-extrabold text-2xl dark:text-white">喵喵工具集</a></h1>
         </div>
         <div class="flex flex-1 flex-col overflow-y-auto no-scrollbar p-1 cursor-pointer">
           <div id="sidebar" class="flex flex-1 flex-col">
@@ -169,6 +169,16 @@
         </div>
       </div>
 
+      <!-- 移动端搜索框：小屏显示，吸顶在顶栏下方 -->
+      <div class="lg:hidden sticky top-16 z-30 px-4 py-2 bg-white dark:pintree-bg-gray-900 border-b border-gray-200 dark:pintree-border-gray-800">
+        <div class="relative flex items-center">
+          <input id="searchInputMobile" type="search"
+            class="w-full text-sm text-gray-900 dark:text-gray-400 pl-4 pr-14 h-10 rounded-lg border border-gray-200 dark:pintree-border-gray-700 bg-white dark:pintree-bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="搜索工具网站...">
+          <button id="clearSearchButtonMobile" class="absolute right-3 text-sm text-gray-500 rounded hidden">清空</button>
+        </div>
+      </div>
+
       <!-- Main content area -->
       <main class="mt-4 dark:pintree-bg-gray-900 flex-grow">
         <div id="loading-spinner" class="flex justify-center items-center h-full">
@@ -210,6 +220,20 @@
                 Pintree
               </a>
             </p>
+          </div>
+          <div class="mt-3 flex flex-wrap justify-center items-center gap-x-6 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
+            <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener"
+               class="inline-flex items-center hover:text-gray-700 dark:hover:text-gray-200">
+              <img src="https://www.meowtool.com/wp-content/themes/AeroCorePro/static/img/icp.svg" alt="ICP备案"
+                   class="inline w-4 h-4 mr-1 align-middle" loading="lazy" decoding="async">
+              闽ICP备2026005550号-1
+            </a>
+            <a href="https://beian.mps.gov.cn/#/query/webSearch" target="_blank" rel="nofollow noopener"
+               class="inline-flex items-center hover:text-gray-700 dark:hover:text-gray-200">
+              <img src="https://www.meowtool.com/wp-content/themes/AeroCorePro/static/img/police.svg" alt="公安备案"
+                   class="inline w-4 h-4 mr-1 align-middle" loading="lazy" decoding="async">
+              闽公网安备35021102002507号
+            </a>
           </div>
         </div>
       </footer>
@@ -344,6 +368,7 @@
       document.getElementById('breadcrumbs').style.display = 'none';
       document.getElementById('back-home-button').classList.add('hidden');
       document.getElementById('clearSearchButton').classList.add('hidden');
+      document.getElementById('clearSearchButtonMobile').classList.add('hidden');
 
       topLevelData.forEach((cat, i) => {
         container.appendChild(buildCategorySection(cat, i));
@@ -603,6 +628,10 @@
       if (sectionObserver) sectionObserver.disconnect();
       closeMobileMenu();
 
+      // 同步两端搜索框内容
+      document.getElementById('searchInput').value = query;
+      document.getElementById('searchInputMobile').value = query;
+
       const results = searchInData(topLevelData, query.toLowerCase());
       const links = results.filter(r => r.type === 'link');
 
@@ -611,6 +640,7 @@
       document.getElementById('breadcrumbs').style.display = 'none';
       document.getElementById('back-home-button').classList.add('hidden');
       document.getElementById('clearSearchButton').classList.remove('hidden');
+      document.getElementById('clearSearchButtonMobile').classList.remove('hidden');
       highlightNav(-1);
 
       if (links.length === 0) {
@@ -631,7 +661,9 @@
 
     function clearSearchResults() {
       document.getElementById('searchInput').value = '';
+      document.getElementById('searchInputMobile').value = '';
       document.getElementById('clearSearchButton').classList.add('hidden');
+      document.getElementById('clearSearchButtonMobile').classList.add('hidden');
       renderHome();
       window.scrollTo({ top: 0 });
     }
@@ -685,6 +717,14 @@
       }
     });
     document.getElementById('clearSearchButton').addEventListener('click', clearSearchResults);
+
+    // 移动端搜索框（仅小屏可见）
+    document.getElementById('searchInputMobile').addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') {
+        searchBookmarks(event.target.value);
+      }
+    });
+    document.getElementById('clearSearchButtonMobile').addEventListener('click', clearSearchResults);
 
     /* ================= 主题切换（沿用原逻辑） ================= */
     const themeToggleButton = document.getElementById('themeToggleButton');

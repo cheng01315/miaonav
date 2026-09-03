@@ -547,3 +547,40 @@
   }
 
 
+  /* ================================================
+     移动端适配（≤640px）：吸顶搜索框 + 每行 2 张卡片
+     ================================================ */
+  @media (max-width: 640px) {
+    #bookmarks {
+      padding: 1rem;
+    }
+
+    .mn-section {
+      margin-bottom: 1.75rem;
+      /* 顶栏(64px) + 吸顶搜索框(约56px)，跳转锚点时给标题留足空间 */
+      scroll-margin-top: 8.5rem;
+    }
+
+    /* 移动端固定每行 2 张卡片 */
+    .mn-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+    }
+
+    .mn-card {
+      padding: 0.625rem;
+      gap: 0.5rem;
+    }
+
+    .mn-card-icon {
+      width: 32px;
+      height: 32px;
+    }
+
+    /* 手机上卡片更窄，描述缩成一行避免拥挤 */
+    .mn-card-desc {
+      -webkit-line-clamp: 1;
+    }
+  }
+
+
