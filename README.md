@@ -152,7 +152,7 @@ python -m http.server 8000
 ```
 
 ### 部署
-将整个目录（含 `index.html`、`css/`、`json/`、`assets/`）托管到任意静态空间即可。当前线上版本部署于 **https://www.meowtool.com/miaonav**。
+将整个目录（含 `index.html`、`css/`、`json/`、`assets/`）托管到任意静态空间即可。当前线上版本部署于 ** https://www.meowtool.com/miaonav **。
 
 ---
 
