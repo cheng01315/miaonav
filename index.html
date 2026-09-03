@@ -34,8 +34,8 @@
   <link rel="mask-icon" href="assets/favicon/favicon-32x32.png" color="#0b0b0f">
 
   <!-- Stylesheet -->
-  <link rel="stylesheet" href="css/tailwind.css?v=3">
-  <link rel="stylesheet" href="css/styles.css?v=3">
+  <link rel="stylesheet" href="css/tailwind.css?v=6">
+  <link rel="stylesheet" href="css/styles.css?v=6">
   
  <!-- Umami统计工具 -->
  <script defer src="https://cloud.umami.is/script.js" data-website-id="9ede9a8f-ca48-47df-98f1-290ac0d8838a"></script>
@@ -169,9 +169,12 @@
         </div>
       </div>
 
-      <!-- 移动端搜索框：小屏显示，吸顶在顶栏下方 -->
-      <div class="lg:hidden sticky top-16 z-30 px-4 py-2 bg-white dark:pintree-bg-gray-900 border-b border-gray-200 dark:pintree-border-gray-800">
-        <div class="relative flex items-center">
+      <!-- 移动端搜索框：小屏显示，吸顶在顶栏下方
+           样式全部写在 css/styles.css 的「移动端搜索栏」区块，不依赖 tailwind.css：
+           本地 tailwind.css 是精简版，pr-14 / right-3 / h-10 / top-16 等类并未编译进去 -->
+      <div id="mobile-search-bar"
+        class="lg:hidden sticky top-16 z-30 px-4 py-2 bg-white dark:pintree-bg-gray-900 border-b border-gray-200 dark:pintree-border-gray-800">
+        <div class="mn-search-wrap relative flex items-center">
           <input id="searchInputMobile" type="search"
             class="w-full text-sm text-gray-900 dark:text-gray-400 pl-4 pr-14 h-10 rounded-lg border border-gray-200 dark:pintree-border-gray-700 bg-white dark:pintree-bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="搜索工具网站...">
@@ -719,12 +722,18 @@
     document.getElementById('clearSearchButton').addEventListener('click', clearSearchResults);
 
     // 移动端搜索框（仅小屏可见）
-    document.getElementById('searchInputMobile').addEventListener('keydown', function (event) {
+    const searchInputMobile = document.getElementById('searchInputMobile');
+    const clearSearchButtonMobile = document.getElementById('clearSearchButtonMobile');
+    searchInputMobile.addEventListener('keydown', function (event) {
       if (event.key === 'Enter') {
         searchBookmarks(event.target.value);
       }
     });
-    document.getElementById('clearSearchButtonMobile').addEventListener('click', clearSearchResults);
+    // 移动端专属：一输入文字就显示「清空」按钮（配合 CSS 隐藏原生 x，右侧位置专给清空）
+    searchInputMobile.addEventListener('input', function () {
+      clearSearchButtonMobile.classList.toggle('hidden', searchInputMobile.value.trim().length === 0);
+    });
+    clearSearchButtonMobile.addEventListener('click', clearSearchResults);
 
     /* ================= 主题切换（沿用原逻辑） ================= */
     const themeToggleButton = document.getElementById('themeToggleButton');
