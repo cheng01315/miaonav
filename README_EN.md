@@ -5,7 +5,7 @@
 > A curated "tool website directory" generated from bookmarks, with category tiling, tag-linked filtering, dark mode and a local visual editor.
 
 - 🌐 Live demo: **https://www.meowtool.com/miaonav**
-- 🍴 Forked from: **https://github.com/Pintree-io/pintree/tree/pintree-old-pages** (Pintree legacy `pintree-old-pages` branch)
+- 🍴 Forked from: **https://github.com/Pintree-io/pintree/tree/pintree-old-pages**   (Pintree legacy `pintree-old-pages` branch)
 - ✍️ Author: Cheng
 
 ---
