@@ -24,6 +24,8 @@ This project is a derivative work built on the **Pintree** `pintree-old-pages` b
 
 ### V1.0.1
 
+https://github.com/cheng01315/miaonav/tree/v1.01_miaonav
+
 Release Date: 2026.9.3
 
 **1. Mobile Search Box (New)**
