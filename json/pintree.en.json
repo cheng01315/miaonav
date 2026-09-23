@@ -2,7 +2,7 @@
   {
     "type": "folder",
     "addDate": 1718526478000,
-    "title": "搜索工具",
+    "title": "search tool",
     "emoji": "🔍",
     "children": [
       {
@@ -11,7 +11,7 @@
         "title": "Felo",
         "icon": "assets/logo/felo.ai.png",
         "url": "https://felo.ai/search",
-        "description": "基于人工智能技术的智能搜索平台"
+        "description": "Intelligent search platform based on artificial intelligence technology"
       },
       {
         "type": "link",
@@ -19,33 +19,33 @@
         "title": "Perplexity",
         "icon": "assets/logo/www.perplexity.ai.png",
         "url": "https://www.perplexity.ai/",
-        "description": "AI搜索引擎/AI问答平台"
+        "description": "AI search engine/AI Q&A platform"
       },
       {
         "type": "link",
         "addDate": 1718526478003,
-        "title": "搜索123",
+        "title": "Search 123",
         "icon": "assets/logo/sousuo123.com.png",
         "url": "https://sousuo123.com/",
-        "description": "轻松搜索全网资源，快速定位您所需的信息与内容。"
+        "description": "Easily search for resources across the internet and quickly locate the information and content you need."
       }
     ]
   },
   {
     "type": "folder",
     "addDate": 1718526478014,
-    "title": "实用工具",
+    "title": "Utility tools",
     "emoji": "🛠️",
     "children": [
       {
         "type": "folder",
         "addDate": 1718526478015,
-        "title": "格式转换",
+        "title": "format conversion",
         "children": [
           {
             "type": "folder",
             "addDate": 1718526478016,
-            "title": "通用转换",
+            "title": "Universal Conversion",
             "children": [
               {
                 "type": "link",
@@ -53,7 +53,7 @@
                 "title": "Convertio",
                 "icon": "assets/logo/convertio.co.png",
                 "url": "https://convertio.co/zh/",
-                "description": "Convertio是一款功能强大的在线文件格式转换工具"
+                "description": "Convertio is a powerful online file format conversion tool"
               },
               {
                 "type": "link",
@@ -61,22 +61,22 @@
                 "title": "Covert2",
                 "icon": "assets/logo/convert2.cn.png",
                 "url": "https://convert2.cn/",
-                "description": "Covert2是一个专注于文件格式转换的在线工具平台"
+                "description": "Covert2 is an online tool platform dedicated to file format conversion"
               },
               {
                 "type": "link",
                 "addDate": 1718526478019,
-                "title": "文件转换工具",
+                "title": "File conversion tool",
                 "icon": "assets/logo/cdkm.com.png",
                 "url": "https://cdkm.com/cn/",
-                "description": "一个多文件格式转换网站"
+                "description": "A website for converting multiple file formats"
               }
             ]
           },
           {
             "type": "folder",
             "addDate": 1718526478030,
-            "title": "图像转换",
+            "title": "image transformation",
             "children": [
               {
                 "type": "link",
@@ -84,15 +84,15 @@
                 "title": "JinaConvert",
                 "icon": "assets/logo/jinaconvert.com.png",
                 "url": "https://jinaconvert.com/cn/index.php",
-                "description": "JinaConvert是一个专注于在线图片格式转换的专业工具。"
+                "description": "JinaConvert is a professional tool dedicated to online image format conversion."
               },
               {
                 "type": "link",
                 "addDate": 1718526478032,
-                "title": "图像格式转换",
+                "title": "Image format conversion",
                 "icon": "assets/logo/omnifile.co.png",
                 "url": "https://omnifile.co/zh-cn/",
-                "description": "OmniFile是一款完全在浏览器端运行的免费通用图像转换器"
+                "description": "OmniFile is a free and universal image converter that runs entirely on the browser side"
               },
               {
                 "type": "link",
@@ -100,7 +100,7 @@
                 "title": "SVG Converter",
                 "icon": "assets/logo/svgconverter.com.png",
                 "url": "https://svgconverter.com/zh/",
-                "description": "SVG Converter是一个专注于矢量图形格式转换的在线工具平台。"
+                "description": "SVG Converter is an online tool platform dedicated to converting vector graphics formats."
               }
             ]
           }
@@ -109,15 +109,15 @@
       {
         "type": "folder",
         "addDate": 1718526478049,
-        "title": "PDF工具",
+        "title": "PDF Tools",
         "children": [
           {
             "type": "link",
             "addDate": 1718526478050,
-            "title": "图片/PDF压缩",
+            "title": "Image/PDF compression",
             "icon": "assets/logo/docsmall.com.png",
             "url": "https://docsmall.com/",
-            "description": "主要功能包括：图片压缩、GIF压缩、PDF压缩、PDF合并、PDF分割。"
+            "description": "The main functions include: image compression, GIF compression, PDF compression, PDF merging, and PDF segmentation."
           },
           {
             "type": "link",
@@ -125,7 +125,7 @@
             "title": "PDFREAL",
             "icon": "assets/logo/pdfreal.com.png",
             "url": "https://pdfreal.com/",
-            "description": "PDFREAL是一个专注于PDF文档处理的在线工具平台"
+            "description": "PDFREAL is an online tool platform dedicated to PDF document processing"
           },
           {
             "type": "link",
@@ -133,7 +133,7 @@
             "title": "PDF24 Tools",
             "icon": "assets/logo/tools.pdf24.org.png",
             "url": "https://tools.pdf24.org/zh/",
-            "description": "PDF24 Tools是一个功能全面且完全免费的在线PDF处理工具集。"
+            "description": "PDF24 Tools is a comprehensive and completely free online PDF processing toolkit."
           }
         ]
       }
@@ -142,68 +142,68 @@
   {
     "type": "folder",
     "addDate": 1718526478393,
-    "title": "设计素材",
+    "title": "design materials",
     "emoji": "🎨",
     "children": [
       {
         "type": "folder",
         "addDate": 1718526478394,
-        "title": "图标",
+        "title": "icon",
         "children": [
           {
             "type": "link",
             "addDate": 1718526478395,
-            "title": "Vector图标下载",
+            "title": "Vector icon download",
             "icon": "assets/logo/www.flaticon.com.png",
             "url": "https://www.flaticon.com/",
-            "description": "海量免费矢量图标下载，支持自定义颜色与格式，满足设计需求。"
+            "description": "Massive free vector icon downloads, supporting custom colors and formats to meet design needs."
           },
           {
             "type": "link",
             "addDate": 1718526478396,
-            "title": "阿里矢量图标库",
+            "title": "Alibaba Vector Icon Library",
             "icon": "assets/logo/www.iconfont.cn.png",
             "url": "https://www.iconfont.cn/",
-            "description": "阿里巴巴矢量图标库，提供海量免费矢量图标下载与个性化定制服务。"
+            "description": "Alibaba Vector Icon Library provides massive free vector icon downloads and personalized customization services."
           },
           {
             "type": "link",
             "addDate": 1718526478397,
-            "title": "IconBrew图标下载",
+            "title": "IconBrew icon download",
             "icon": "assets/logo/iconbrew.com.png",
             "url": "https://iconbrew.com/",
-            "description": "海量精美图标免费下载，轻松提升设计效率与创意表达。"
+            "description": "Massive and exquisite icons for free download, easily improving design efficiency and creative expression."
           }
         ]
       },
       {
         "type": "folder",
         "addDate": 1718526478407,
-        "title": "字体",
+        "title": "font",
         "children": [
           {
             "type": "link",
             "addDate": 1718526478408,
-            "title": "字集",
+            "title": "Character set",
             "icon": "assets/logo/wordshub.github.io.png",
             "url": "https://wordshub.github.io/free-font/",
-            "description": "免费字体库，精选优质开源字体，轻松下载使用。"
+            "description": "Free font library, carefully selected high-quality open-source fonts, easy to download and use."
           },
           {
             "type": "link",
             "addDate": 1718526478409,
-            "title": "最佳免费字体",
+            "title": "Best Free Font",
             "icon": "assets/logo/bestfreefonts.com.png",
             "url": "https://bestfreefonts.com/",
-            "description": "海量免费字体资源，为设计师提供创意灵感与实用工具。"
+            "description": "Massive free font resources provide designers with creative inspiration and practical tools."
           },
           {
             "type": "link",
             "addDate": 1718526478410,
-            "title": "奇迹秀黑体字体库",
+            "title": "Miracle Show Black Font Library",
             "icon": "assets/logo/www.qijishow.com.png",
             "url": "https://www.qijishow.com/resource/fonts.html",
-            "description": "海量免费黑体字体资源，一键下载轻松应用。"
+            "description": "Massive free black font resources, easy to download applications with just one click."
           }
         ]
       }
@@ -212,29 +212,29 @@
   {
     "type": "folder",
     "addDate": 1718526478460,
-    "title": "AI工具库",
+    "title": "AI Tool Library",
     "emoji": "🤖",
     "children": [
       {
         "type": "folder",
         "addDate": 1718526478461,
-        "title": "AI聊天助手",
+        "title": "AI chat assistant",
         "children": [
           {
             "type": "link",
             "addDate": 1718526478462,
-            "title": "纳米ai",
+            "title": "Nano AI",
             "icon": "assets/logo/bot.n.cn.png",
             "url": "https://bot.n.cn/",
-            "description": "纳米AI，360出品的智能助手，提供高效、便捷的AI对话与创作服务。"
+            "description": "Nano AI, an intelligent assistant produced by 360, provides efficient and convenient AI dialogue and creative services."
           },
           {
             "type": "link",
             "addDate": 1718526478463,
-            "title": "零一万物",
+            "title": "Zero One Thing",
             "icon": "assets/logo/platform.lingyiwanwu.com.png",
             "url": "https://platform.lingyiwanwu.com/chat",
-            "description": "探索零一万物AI平台，即刻体验智能对话与高效创作服务。"
+            "description": "Explore the Zero One Thing AI platform and instantly experience intelligent dialogue and efficient creative services."
           },
           {
             "type": "link",
@@ -242,7 +242,7 @@
             "title": "Kimi.ai",
             "icon": "assets/logo/www.kimi.com.png",
             "url": "https://www.kimi.com/",
-            "description": "Kimi.ai 是一款智能助手，支持上传文件并快速解析内容，助您高效获取信息。"
+            "description": "Kimi.ai is an intelligent assistant that supports uploading files and quickly parsing content, helping you efficiently obtain information."
           }
         ]
       },
@@ -257,15 +257,15 @@
             "title": "DeepSeek Harness",
             "icon": "assets/logo/www.deepseek.com.png",
             "url": "https://www.deepseek.com/harness/",
-            "description": "DeepSeek Harness 开发者预览版面向全球 Harness 开发者开放测试并开放源代码。Agent 的各个部分均采用插件式开放架构，可以替换和重新组合。"
+            "description": "DeepSeek Harness Developer Preview is open for testing and open-source development by Harness developers worldwide. Each part of the Agent adopts a plug-in open architecture, which can be replaced and recombined."
           },
           {
             "type": "link",
             "addDate": 1718526478491,
-            "title": "智谱AutoClaw",
+            "title": "Zhipu AutoClaw",
             "icon": "assets/logo/autoclaw.zhipuai.cn.png",
             "url": "https://autoclaw.zhipuai.cn/",
-            "description": "智谱AutoClaw（澳龙）官方AI Agent工作伙伴，支持智谱autoclaw一键安装与下载，内置50+预置技能，覆盖文件生成、数据分析、浏览器自动化与IM协作。"
+            "description": "Official AI Agent partner of Zhipu Autoclaw (Aolong), supports one click installation and download of Zhipu Autoclaw, with over 50 built-in skills covering file generation, data analysis, browser automation, and IM collaboration."
           },
           {
             "type": "link",
@@ -273,7 +273,7 @@
             "title": "OpenClaw",
             "icon": "assets/logo/openclaws.io.png",
             "url": "https://openclaws.io/",
-            "description": "OpenClaw 是一款免费开源的 AI 助手，运行在你自己的电脑上。支持 WhatsApp、Telegram、Discord 等 30 多个平台。"
+            "description": "OpenClaw is a free and open-source AI assistant that runs on your own computer. Supports over 30 platforms including WhatsApp, Telegram, Discord, etc."
           }
         ]
       }
@@ -282,68 +282,68 @@
   {
     "type": "folder",
     "addDate": 1718526478517,
-    "title": "软件平台",
+    "title": "software platform",
     "emoji": "💻",
     "children": [
       {
         "type": "folder",
         "addDate": 1718526478518,
-        "title": "Win软件",
+        "title": "Win software",
         "children": [
           {
             "type": "link",
             "addDate": 1718526478519,
-            "title": "果核剥壳",
+            "title": "Core peeling",
             "icon": "assets/logo/www.ghxi.com.png",
             "url": "https://www.ghxi.com/",
-            "description": "果核剥壳，专注分享免费、安全、无广告的绿色软件。"
+            "description": "Core peeling, focusing on sharing free, safe, and ad free green software."
           },
           {
             "type": "link",
             "addDate": 1718526478520,
-            "title": "黑域基地",
+            "title": "Black Domain Base",
             "icon": "assets/logo/www.hybase.com.png",
             "url": "https://www.hybase.com/",
-            "description": "黑域基地：提供最新科技资讯、软件资源与实用技术教程的综合平台。"
+            "description": "Black Domain Base: A comprehensive platform that provides the latest technological information, software resources, and practical technical tutorials."
           },
           {
             "type": "link",
             "addDate": 1718526478521,
-            "title": "浏览迷",
+            "title": "Browse Fans",
             "icon": "assets/logo/liulanmi.com.png",
             "url": "https://liulanmi.com/",
-            "description": "浏览迷提供实用工具与最新资讯，助你高效上网，探索网络世界。"
+            "description": "Browsing enthusiasts provide practical tools and the latest information to help you efficiently surf the internet and explore the online world."
           }
         ]
       },
       {
         "type": "folder",
         "addDate": 1718526478584,
-        "title": "Win系统",
+        "title": "Win system",
         "children": [
           {
             "type": "link",
             "addDate": 1718526478585,
-            "title": "极简系统",
+            "title": "Minimalist System",
             "icon": "assets/logo/www.sysmini.com.png",
             "url": "https://www.sysmini.com/",
-            "description": "提供纯净版Windows操作系统镜像和常用软件"
+            "description": "Provide a pure version of the Windows operating system image and commonly used software"
           },
           {
             "type": "link",
             "addDate": 1718526478586,
-            "title": "Puresys纯净系统",
+            "title": "Puresys Pure System",
             "icon": "assets/logo/www.puresys.net.png",
             "url": "https://www.puresys.net/",
-            "description": "纯净版Windows系统下载"
+            "description": "Pure version Windows system download"
           },
           {
             "type": "link",
             "addDate": 1718526478587,
-            "title": "MSDN原版系统",
+            "title": "The original version of the MSN system",
             "icon": "assets/logo/www.imsdn.cn.png",
             "url": "https://www.imsdn.cn/",
-            "description": "提供微软官方原版Windows操作系统镜像文件"
+            "description": "Provide Microsoft's official original Windows operating system image file"
           }
         ]
       }
@@ -352,7 +352,7 @@
   {
     "type": "folder",
     "addDate": 1718526478710,
-    "title": "编程开发",
+    "title": "Programming Development",
     "emoji": "⌨️",
     "children": [
       {
@@ -361,7 +361,7 @@
         "title": "Aura",
         "icon": "assets/logo/aura.build.png",
         "url": "https://aura.build",
-        "description": "通过AI生成美丽网站页面、模板浏览和remix自定义"
+        "description": "Generate beautiful website pages, template browsing, and remix customization through AI"
       },
       {
         "type": "link",
@@ -369,36 +369,36 @@
         "title": "Favicon.im",
         "icon": "assets/logo/favicon.im.png",
         "url": "https://favicon.im/",
-        "description": "一键生成网站图标，支持多种格式下载，简单快捷。"
+        "description": "One click generation of website icons, supporting multiple formats for download, simple and fast."
       },
       {
         "type": "link",
         "addDate": 1718526478713,
-        "title": "Visual Studio Code下载",
+        "title": "Visual Studio Code Download",
         "icon": "assets/logo/code.visualstudio.com.png",
         "url": "https://code.visualstudio.com/",
-        "description": "微软官方免费代码编辑器，支持多语言开发和丰富插件扩展。"
+        "description": "Microsoft's official free code editor supports multilingual development and rich plugin extensions."
       }
     ]
   },
   {
     "type": "folder",
     "addDate": 1718526478738,
-    "title": "网站导航",
+    "title": "Website Navigation",
     "emoji": "🧭",
     "children": [
       {
         "type": "folder",
         "addDate": 1718526478739,
-        "title": "简约启始页",
+        "title": "Minimalist Start Page",
         "children": [
           {
             "type": "link",
             "addDate": 1718526478740,
-            "title": "青柠起始页",
+            "title": "Lime Start Page",
             "icon": "assets/logo/limestart.cn.png",
             "url": "https://www.limestart.cn/",
-            "description": "清新简约的浏览器起始页，集成搜索、书签与实用工具，助你高效开启每一天。"
+            "description": "A fresh and simple browser start page that integrates search, bookmarks, and practical tools to help you efficiently start every day."
           },
           {
             "type": "link",
@@ -406,46 +406,46 @@
             "title": "iLinks",
             "icon": "assets/logo/xydh.fun.png",
             "url": "https://xydh.fun/",
-            "description": "一站式个人导航网站，聚合常用网址，让网络生活更高效便捷。"
+            "description": "A one-stop personal navigation website that aggregates commonly used URLs, making online life more efficient and convenient."
           },
           {
             "type": "link",
             "addDate": 1718526478742,
-            "title": "找一找新标签",
+            "title": "Find a new tag",
             "icon": "assets/logo/zyzwz.cn.png",
             "url": "https://zyzwz.cn/",
-            "description": "找一找新标签，智能推荐优质网站，助你高效发现网络新天地。"
+            "description": "Find new tags and intelligently recommend high-quality websites to help you efficiently discover the Xintiandi of the Internet."
           }
         ]
       },
       {
         "type": "folder",
         "addDate": 1718526478751,
-        "title": "综合类导航",
+        "title": "Comprehensive navigation",
         "children": [
           {
             "type": "link",
             "addDate": 1718526478752,
-            "title": "聚神铺导航",
+            "title": "Jushen Shop Navigation",
             "icon": "assets/logo/jspoo.com.png",
             "url": "https://www.jspoo.com/",
-            "description": "聚神铺导航，一站汇聚全网优质资源，助你高效直达所需网站。"
+            "description": "Jushenpu Navigation, a one-stop gathering of high-quality resources from the entire network, helps you efficiently reach the website you need."
           },
           {
             "type": "link",
             "addDate": 1718526478753,
-            "title": "龙轩导航",
+            "title": "Longxuan Navigation",
             "icon": "assets/logo/ilxdh.com.png",
             "url": "http://ilxdh.com/",
-            "description": "龙轩导航：汇聚全网优质资源，简洁高效的一站式网址导航。"
+            "description": "Longxuan Navigation: Gathering high-quality resources from the entire network, providing a concise and efficient one-stop website navigation."
           },
           {
             "type": "link",
             "addDate": 1718526478754,
-            "title": "OpenI上网导航",
+            "title": "OpenI Internet Navigation",
             "icon": "assets/logo/ai.openi.cn.png",
             "url": "https://ai.openi.cn/",
-            "description": "OpenI上网导航，聚合各类优质网站资源，助你高效探索互联网世界。"
+            "description": "OpenI online navigation gathers various high-quality website resources to help you explore the Internet world efficiently."
           }
         ]
       }
@@ -454,52 +454,52 @@
   {
     "type": "folder",
     "addDate": 1718526478976,
-    "title": "内容资讯",
+    "title": "Content News",
     "emoji": "📰",
     "children": [
       {
         "type": "folder",
         "addDate": 1718526478977,
-        "title": "个人网站",
+        "title": "personal website",
         "children": [
           {
             "type": "link",
             "addDate": 1718526478978,
-            "title": "AI研究所",
+            "title": "AI Research Institute",
             "icon": "assets/logo/www.aiyjs.com.png",
             "url": "https://www.aiyjs.com/",
-            "description": "专注AI技术分享，汇聚前沿资讯与实用工具，助你探索智能未来。"
+            "description": "Focusing on sharing AI technology, gathering cutting-edge information and practical tools to help you explore the intelligent future."
           },
           {
             "type": "link",
             "addDate": 1718526478979,
-            "title": "神器集",
+            "title": "Artifact Collection",
             "icon": "assets/logo/shenqi.io.png",
             "url": "https://shenqi.io/",
-            "description": "发现并下载实用好用的电脑软件，尽在神器集。"
+            "description": "Discover and download practical and useful computer software in the artifact collection."
           },
           {
             "type": "link",
             "addDate": 1718526478980,
-            "title": "一网一匠",
+            "title": "One network, one craftsman",
             "icon": "assets/logo/ywyj.cn.png",
             "url": "https://ywyj.cn/",
-            "description": "汇聚匠心工艺，一站式打造品质家居生活。"
+            "description": "Gathering exquisite craftsmanship, creating a one-stop quality home life."
           }
         ]
       },
       {
         "type": "folder",
         "addDate": 1718526478993,
-        "title": "自媒体网站",
+        "title": "Self media website",
         "children": [
           {
             "type": "link",
             "addDate": 1718526478994,
-            "title": "小众软件",
+            "title": "Niche software",
             "icon": "assets/logo/www.appinn.com.png",
             "url": "https://www.appinn.com/",
-            "description": "发现、分享有趣实用的免费软件与手机应用。"
+            "description": "Discover and share interesting and practical free software and mobile applications."
           },
           {
             "type": "link",
@@ -507,15 +507,15 @@
             "title": "Topbook",
             "icon": "assets/logo/topbook.cc.png",
             "url": "https://topbook.cc/",
-            "description": "专注于提升个人与团队效率的数字工具与技巧分享平台"
+            "description": "A digital tool and skill sharing platform dedicated to improving individual and team efficiency"
           },
           {
             "type": "link",
             "addDate": 1718526478996,
-            "title": "少数派",
+            "title": "Minority",
             "icon": "assets/logo/sspai.com.png",
             "url": "https://sspai.com/",
-            "description": "发现优质应用，打造高效数字生活指南"
+            "description": "Discover high-quality applications and create an efficient digital lifestyle guide"
           }
         ]
       }
@@ -524,7 +524,7 @@
   {
     "type": "folder",
     "addDate": 1718526478997,
-    "title": "趣味网站",
+    "title": "Fun website",
     "emoji": "🎮",
     "children": [
       {
@@ -533,15 +533,15 @@
         "title": "FUUN.FUN",
         "icon": "assets/logo/fuun.fun.png",
         "url": "https://fuun.fun/",
-        "description": "FUUN.FUN：发现创意灵感，探索设计美学与实用工具。"
+        "description": "FUUN.FUN: Discover creative inspiration, explore design aesthetics and practical tools."
       },
       {
         "type": "link",
         "addDate": 1718526478999,
-        "title": "书签地球",
+        "title": "Bookmark Earth",
         "icon": "assets/logo/www.bookmarkearth.cn.png",
         "url": "https://www.bookmarkearth.cn/",
-        "description": "书签地球：汇集全球用户分享的优质书签，轻松发现与收藏实用网页资源。"
+        "description": "Bookmark Earth: Collecting high-quality bookmarks shared by users worldwide, making it easy to discover and bookmark practical web resources."
       },
       {
         "type": "link",
@@ -549,7 +549,7 @@
         "title": "NASA",
         "icon": "assets/logo/images.nasa.gov.png",
         "url": "https://images.nasa.gov/",
-        "description": "探索宇宙奇观，NASA官方图片库免费下载高清影像。"
+        "description": "Explore the wonders of the universe, download high-definition images for free from NASA's official image library."
       }
     ]
   }

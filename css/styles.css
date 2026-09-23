@@ -230,7 +230,51 @@
      迷鹿风格改造新增样式（section / 标签 / 卡片 / 详情页）
      ================================================ */
 
-  /* ---- 侧边栏导航项 ---- */
+  /* ---- 中英切换按钮（顶栏右上角胶囊） ----
+     当前页面语言对应的那个 .lang-pill 用 `aria-current="page"` 标记，蓝色高亮。
+     样式不依赖精简版 tailwind.css，全部写死。 */
+#langToggle {
+  font-family: inherit;
+  letter-spacing: 0.02em;
+}
+
+#langToggle .lang-pill {
+  text-decoration: none;
+  white-space: nowrap;
+  line-height: 1.25;
+}
+
+#langToggle .lang-pill[aria-current="page"] {
+  background: #2563EB;
+  color: #ffffff;
+  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.35);
+}
+
+#langToggle .lang-pill[aria-current="page"]:hover {
+  background: #1D4ED8;
+  color: #ffffff;
+}
+
+.dark #langToggle .lang-pill[aria-current="page"] {
+  background: #60A5FA;
+  color: rgb(17 24 39);
+}
+
+.dark #langToggle .lang-pill[aria-current="page"]:hover {
+  background: #93C5FD;
+  color: rgb(17 24 39);
+}
+
+/* 手机端让语言按钮小一点，不挤压搜索框 */
+@media (max-width: 640px) {
+  #langToggle .lang-pill {
+    padding: 0.25rem 0.625rem;
+    font-size: 0.6875rem;
+  }
+}
+
+
+/* ---- 侧边栏导航项 ---- */
   .mn-nav-item {
     display: flex;
     align-items: center;

@@ -38,6 +38,7 @@ except ImportError:
 # ============== 配置 ==============
 HEADERS = ["网站名称", "网址分类目录", "链接", "描述"]
 SEPARATOR = ">"          # 分类目录分隔符
+ICON_SHEET = "分类图标"   # 分类路径 -> emoji 的辅助 sheet（可选）
 SAVE_JSON_NAME = "pintree.json"
 APP_TITLE = "网站导航可视化管理工具"
 FAVICON_IM = "https://favicon.im/{d}"
@@ -68,6 +69,387 @@ try:
 except Exception:
     pass
 ICON_EXTS = (".png", ".jpg", ".gif", ".webp", ".ico")
+
+
+# ============== 翻译/进度窗口辅助 ==============
+def _make_progress_window(parent, title):
+    """返回进度窗。返回 (state, log_box)：
+    state = {"stop": bool, "running": bool, "done": bool, "win": win,
+             "bar": ttk.Progressbar, "pct_label": ttk.Label}
+    - stop：置 True 请求停止（worker 自行检测）
+    - running：worker 运行中置 True，结束置 False
+    - done：worker 是否已正常结束
+    - win：进度窗
+    - bar/pct_label：进度条与百分比标签（配合 _set_progress 使用）
+    进度窗在翻译进行中时若被点 X 关闭，会弹窗询问：已翻部分已实时写入
+    增量缓存，安全关闭（后台线程可能被终止，但进度已落盘，不丢已翻成果）。
+    """
+    win = tk.Toplevel(parent)
+    win.title(title)
+    win.geometry("560x400")
+    win.transient(parent)
+
+    # 顶部：进度条 + 百分比
+    top = ttk.Frame(win, padding=(8, 8, 8, 0))
+    top.pack(fill=tk.X)
+    pct_label = ttk.Label(top, text="0%", anchor="e", width=5)
+    pct_label.pack(side=tk.RIGHT)
+    bar = ttk.Progressbar(top, mode="determinate", maximum=100, value=0)
+    bar.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 6))
+
+    log_box = tk.Text(win, wrap="word", height=11)
+    log_box.pack(fill=tk.BOTH, expand=True, padx=8, pady=8)
+
+    state = {"stop": False, "running": False, "done": False, "win": win,
+             "log": log_box, "bar": bar, "pct_label": pct_label}
+    btns = ttk.Frame(win, padding=4)
+    btns.pack(fill=tk.X)
+    ttk.Button(btns, text="停止", command=lambda: state.__setitem__("stop", True)).pack(side=tk.RIGHT, padx=4)
+    ttk.Button(btns, text="隐藏（后台继续）", command=win.iconify).pack(side=tk.RIGHT, padx=4)
+    hint = ttk.Label(btns, text="已翻进度会实时存入缓存，中断不丢失", foreground="#888")
+    hint.pack(side=tk.LEFT, padx=4)
+
+    def _really_close():
+        state["running"] = False
+        state["done"] = True
+        try:
+            win.destroy()
+        except Exception:
+            pass
+
+    def _on_close():
+        if state["running"] and not state["done"]:
+            if messagebox.askyesno(
+                "翻译进行中",
+                "翻译尚未完成。\n已翻部分已实时写入缓存文件，关闭后进度会保留，"
+                "下次「立刻翻译」会自动续翻。\n\n确定要现在关闭吗？",
+                parent=win,
+            ):
+                _really_close()
+        else:
+            _really_close()
+
+    win.protocol("WM_DELETE_WINDOW", _on_close)
+    return state, log_box
+
+
+def _log(win, log_box, msg):
+    def _do():
+        try:
+            log_box.insert("end", msg + "\n")
+            log_box.see("end")
+        except Exception:
+            pass
+    try:
+        win.after(0, _do)
+    except Exception:
+        pass
+
+
+def _finish_progress(win, success=True):
+    try:
+        win.destroy()
+    except Exception:
+        pass
+
+
+def _finish_when_idle(win, log_cb=None, delay=400):
+    """延时安全关闭进度窗：先确保窗口仍存在再 destroy，避免线程与 UI 竞态。"""
+    def _do():
+        try:
+            win.update_idletasks()
+        except Exception:
+            return
+        try:
+            win.destroy()
+        except Exception:
+            pass
+    try:
+        win.after(delay, _do)
+    except Exception:
+        pass
+
+
+def _set_progress(state, done, total):
+    """更新进度窗里的进度条与百分比。done/total 为翻译条数。
+    在线程里调用即可，内部经 win.after 切回 UI 线程更新。
+    total<=0（进度未知）或 done>=total 时直接把进度条拉满到 100%。"""
+    if total <= 0:
+        done, total = 1, 1   # 用满格表示『已完成/未知总量』
+    pct = min(100.0, 100.0 * done / total)
+
+    def _do():
+        try:
+            state["bar"]["value"] = pct
+            state["pct_label"]["text"] = "%d%%" % round(pct)
+        except Exception:
+            pass
+    try:
+        state["win"].after(0, _do)
+    except Exception:
+        pass
+
+
+def _build_cache_from_en_json(nodes):
+    """从 pintree.en.json 反向提取『原文 → 译文』缓存（folder/link 的 title 与 link.description）。
+    注：这里的『原文』是 en 文件里当前值，把它当 key 是错的——
+    因为 en 文件里存的是译文。所以此函数实际上拿到的是『译文 → 译文』，并不能用作中文缓存。
+    真正的中文缓存要从源 JSON（pintree.json）按 title 对应关系推断。
+    """
+    # 实际上无法仅凭 en.json 反推：因此缓存机制改为"读 pintree.json 的结构 + 已有 en.json 的译文匹配"。
+    # 调用方应使用 _build_cache_from_pair(zh_json, en_json)。
+    return {}
+
+
+def _build_cache_from_pair(zh_nodes, en_nodes):
+    """从中文 JSON 与已有的 en JSON 中，按『位置对应』抽取 title/desc 映射。
+    走的是结构对齐（同位置、同 type、同层级顺序）而非字符串匹配，更稳。"""
+    cache = {}
+
+    def walk(zh_list, en_list):
+        zh_list = list(zh_list or [])
+        en_list = list(en_list or [])
+        # 按出现顺序对齐（两边都按同一逻辑生成）
+        i = j = 0
+        while i < len(zh_list) and j < len(en_list):
+            z = zh_list[i]
+            e = en_list[j]
+            if z.get("type") == e.get("type"):
+                if z.get("type") == "folder":
+                    if z.get("title"):
+                        cache[z["title"]] = e.get("title", "")
+                    walk(z.get("children", []), e.get("children", []))
+                else:  # link
+                    if z.get("title"):
+                        cache[z["title"]] = e.get("title", "")
+                    if z.get("description"):
+                        cache[z["description"]] = e.get("description", "")
+                i += 1; j += 1
+            else:
+                # 类型对不齐就跳过这一对（理论上不应发生）
+                i += 1; j += 1
+
+    walk(zh_nodes, en_nodes)
+    return cache
+
+
+def _build_en_json(store, mapping):
+    """复用 store.to_nested_tree() 的结构，把 title/description 换成 mapping 里的译文。"""
+    base = store.to_nested_tree()
+
+    def apply(nodes):
+        out = []
+        for n in nodes:
+            if n.get("type") == "folder":
+                n = dict(n)
+                t = n.get("title")
+                if t and t in mapping and mapping[t]:
+                    n["title"] = mapping[t]
+                n["children"] = apply(n.get("children", []))
+                out.append(n)
+            elif n.get("type") == "link":
+                n = dict(n)
+                t = n.get("title")
+                d = n.get("description")
+                if t and t in mapping and mapping[t]:
+                    n["title"] = mapping[t]
+                if d and d in mapping and mapping[d]:
+                    n["description"] = mapping[d]
+                out.append(n)
+        return out
+    return apply(base)
+
+
+# ----- 磁盘 JSON 路径约定（中/英 pintree 都放 json/ 目录）-----
+def _project_root_dir():
+    """网站导航工具/ 的上两级就是项目根（含 index.html）。"""
+    return os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+
+
+def _zh_json_path():
+    """中文源文件：项目根/json/pintree.json"""
+    return os.path.normpath(os.path.join(_project_root_dir(), "json", "pintree.json"))
+
+
+def _en_json_path():
+    """英文目标文件：项目根/json/pintree.en.json"""
+    return os.path.normpath(os.path.join(_project_root_dir(), "json", "pintree.en.json"))
+
+
+def _load_json_or_none(path):
+    """读 json；不存在或解析失败返回 None。"""
+    if not os.path.isfile(path):
+        return None
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+
+# ----- 增量翻译缓存（放工具目录，不污染 json/ 产出目录）-----
+# 翻译过程中实时把『已确认的中文→英文』写进这个缓存文件；
+# 中断/停止/关窗后已翻的不丢，下次「立刻翻译」自动读缓存续翻。
+# 只有整批全部翻完，才据此生成干净的 pintree.en.json。
+def _trans_cache_path():
+    """增量翻译缓存文件：位于 网站导航工具/_translation_cache.json"""
+    return os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "_translation_cache.json"))
+
+
+def _load_trans_cache():
+    """读增量翻译缓存，返回 {中文: 英文} dict（可空）。"""
+    data = _load_json_or_none(_trans_cache_path())
+    if not isinstance(data, dict):
+        return {}
+    out = {}
+    for k, v in data.items():
+        if isinstance(k, str) and isinstance(v, str) and v:
+            out[k] = v
+    return out
+
+
+def _save_trans_cache(cache):
+    """原子写增量翻译缓存。cache 为 {中文: 英文} dict。"""
+    p = _trans_cache_path()
+    try:
+        tmp = p + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(cache, f, ensure_ascii=False, indent=2)
+        os.replace(tmp, p)          # 原子替换，避免写一半损坏
+        return True
+    except Exception:
+        return False
+
+
+def _walk_texts(zh_nodes, collect):
+    """深度遍历 zh 树，把需要翻译的中文字符串交给 collect()。folder.title / link.title / link.description"""
+    for n in zh_nodes or []:
+        if n.get("type") == "folder":
+            t = n.get("title", "")
+            if t:
+                collect(t)
+            _walk_texts(n.get("children", []), collect)
+        elif n.get("type") == "link":
+            for k in ("title", "description"):
+                v = n.get(k, "")
+                if v:
+                    collect(v)
+
+
+def _collect_texts_unique(zh_nodes):
+    """按出现顺序去重收集 zh 树中全部需翻译字符串。"""
+    seen = set()
+    order = []
+    def collect(t):
+        if t not in seen:
+            seen.add(t)
+            order.append(t)
+    _walk_texts(zh_nodes, collect)
+    return order
+
+
+def _remap_zh_tree_to_en(zh_nodes, mapping):
+    """以中文树为骨架，仅把 folder/link 的 title/description 换成 mapping 译文，
+    其余字段（emoji/icon/addDate/url 等）原样保留。返回新树。"""
+    out = []
+    for n in zh_nodes or []:
+        if n.get("type") == "folder":
+            nn = dict(n)
+            t = nn.get("title", "")
+            if t and mapping.get(t):
+                nn["title"] = mapping[t]
+            nn["children"] = _remap_zh_tree_to_en(nn.get("children", []), mapping)
+            out.append(nn)
+        elif n.get("type") == "link":
+            nn = dict(n)
+            t = nn.get("title", "")
+            if t and mapping.get(t):
+                nn["title"] = mapping[t]
+            d = nn.get("description", "")
+            if d and mapping.get(d):
+                nn["description"] = mapping[d]
+            out.append(nn)
+        else:
+            out.append(n)
+    return out
+
+
+# ----- 分批翻译 + 增量缓存落盘（worker 线程用）-----
+# 翻译结果不再攒到最后一次性写 en.json，而是每翻完一小批就并入增量缓存并原子落盘。
+# 这样中断/停止/关窗都不会丢已翻成果；en.json 只在『整批全部翻完』时才生成干净版本。
+#
+# 约定：返回的 mapping 形如 {中文: 译文或原文}，其中：
+#   - 已确认译文（翻成功或命中缓存/旧译文）→ 译文/缓存值；
+#   - 停止或失败时未能翻译的 → 用 src 原文占位（保证长度对齐，但不落盘成译文）。
+# 调用方据此区分：只有 is_done 为真时才生成 en.json。
+def _translate_batches_persist(
+    order,            # 需翻译的中文列表（去重保序）
+    cache,            # {中文: 英文}，函数内会被就地补充
+    cfg,              # 翻译配置
+    src="zh", dst="en",
+    batch=20,         # 每批条数
+    log_callback=None,
+    stop_flag=None,
+    progress_cb=None, # 每翻完一批回调 progress_cb(confirmed_total, len(need))
+    cache_step=20,    # 每累计翻满多少条就原子写一次缓存
+):
+    """分批翻译 order，边翻边并入 cache 并周期落盘。
+    返回 (mapping, cache, n_failed, stopped)：
+      mapping = {src: 译文}（已确认的用译文；未翻成功的占位为 src 原文）
+      cache   = 就地补充后的增量缓存 {中文: 确认译文}
+      n_failed = 空译文条数（失败/未确认，非停止引起）
+      stopped  = 是否被中途停止
+    调用方据此决定：仅当 n_failed==0 and not stopped 时才生成干净的 en.json。
+    注意：本函数不清空也不覆盖 cache 里已有的其它中文——只往里补新译文。
+    """
+    mapping = dict(cache)              # 先带上缓存里已有的（含缓存命中的）
+    from translation import translate_many
+    need = [t for t in order if not cache.get(t)]
+    if not need:
+        if progress_cb:
+            progress_cb(len(order), len(order))   # 全部命中缓存 → 进度直接拉满
+        return mapping, cache, 0, False    # 全部已在缓存命中，无失败、未停止
+    n_failed = 0
+    stopped = False
+    done_cnt = 0          # 距上次缓存落盘的增量计数
+    confirmed_total = 0   # 本次已确认译文的累计（含缓存命中部分，用于进度显示）
+    qps = max(0.1, float(cfg.get("qps", 1) or 1))
+    # 按 batch 切片逐批翻译，避免一次性把几百条全塞给 translate_many（也便于边翻边落盘）
+    for start in range(0, len(need), batch):
+        if stop_flag and stop_flag():
+            stopped = True
+            break
+        chunk = need[start:start + batch]
+        chunk_dst = translate_many(chunk, cfg, src=src, dst=dst,
+                                   qps=qps,
+                                   log_callback=log_callback,
+                                   stop_flag=stop_flag)
+        # 若中途停止：translate_many 会提前返回，长度可能不足 chunk，需兜底
+        for k, v in zip(chunk, chunk_dst):
+            if v:                                   # 翻成功 → 入缓存（真译文）
+                cache[k] = v
+                mapping[k] = v
+                done_cnt += 1
+                confirmed_total += 1
+            else:                                   # 空串：失败或未翻到 → 计数并占位原文
+                n_failed += 1
+                mapping[k] = k
+        if progress_cb:
+            progress_cb(confirmed_total, len(need))
+        # 本批内停止
+        if stop_flag and stop_flag():
+            stopped = True
+            break
+        # 周期落盘缓存（含中途停止前已确认部分）
+        if done_cnt >= cache_step or (start + batch) >= len(need):
+            _save_trans_cache(cache)
+            done_cnt = 0
+            if log_callback:
+                log_callback("[缓存已保存] 已翻 %d/%d 条，进度已写入缓存文件" % (start + batch, len(need)))
+    # 收尾再落一次，确保最后一批也进缓存
+    if cache:
+        _save_trans_cache(cache)
+    return mapping, cache, n_failed, stopped
 
 
 # ============== 工具函数 ==============
@@ -292,12 +674,22 @@ class FaviconService:
 class DataStore:
     def __init__(self):
         self.items = []              # [dict{name, category, url, desc}]   # 顺序 = 显示顺序
+        self.category_icons = {}     # 分类完整路径(用 SEPARATOR 连接) -> emoji
         self.current_file = None     # 已打开或保存的 xlsx 文件路径
         self.modified = False
 
     # --- Excel 读写 ---
     def load_excel(self, path):
         wb = openpyxl.load_workbook(path)
+        # 读「分类图标」辅助 sheet（若存在）
+        self.category_icons = {}
+        if ICON_SHEET in wb.sheetnames:
+            ws_icon = wb[ICON_SHEET]
+            for r in range(2, ws_icon.max_row + 1):
+                cat = ws_icon.cell(row=r, column=1).value
+                emoji = ws_icon.cell(row=r, column=2).value
+                if cat and emoji:
+                    self.category_icons[str(cat).strip()] = str(emoji).strip()
         ws = wb.active
         items = []
         for r in range(2, ws.max_row + 1):
@@ -324,6 +716,17 @@ class DataStore:
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
         items = []
+        self.category_icons = {}
+
+        def collect_icons(nodes, path_parts):
+            for node in nodes:
+                if node.get("type") == "folder":
+                    title = node.get("title", "")
+                    new_path = path_parts + [title] if title else path_parts
+                    emoji = node.get("emoji")
+                    if emoji:
+                        self.category_icons[SEPARATOR.join(new_path)] = emoji
+                    collect_icons(node.get("children", []), new_path)
 
         def walk(nodes, path_parts):
             for node in nodes:
@@ -341,6 +744,7 @@ class DataStore:
                         "icon": node.get("icon", ""),  # 保留原图标地址，下载成功后会改写为本地路径
                     })
 
+        collect_icons(data, [])
         walk(data, [])
         self.items = items
         self.current_file = None  # JSON 不绑定 xlsx 路径，保存时需另存
@@ -361,6 +765,22 @@ class DataStore:
             ws.cell(row=i, column=2, value=it["category"])
             ws.cell(row=i, column=3, value=it["url"])
             ws.cell(row=i, column=4, value=it["desc"])
+        # 「分类图标」辅助 sheet：分类路径 -> emoji，便于在 Excel 里直接编辑一级/二级分类图标
+        ws_icon = wb.create_sheet(ICON_SHEET)
+        ws_icon.cell(row=1, column=1, value="分类路径")
+        ws_icon.cell(row=1, column=2, value="Emoji")
+        for i, (cat, emoji) in enumerate(self.category_icons.items(), start=2):
+            ws_icon.cell(row=i, column=1, value=cat)
+            ws_icon.cell(row=i, column=2, value=emoji)
+        # 若图标表为空，则把现有 items 里出现的一级分类补进去（emoji 留空待用户填）
+        if not self.category_icons:
+            filled = set()
+            for it in self.items:
+                parts = [p.strip() for p in (it["category"] or "").split(SEPARATOR) if p.strip()]
+                if parts and parts[0] not in filled:
+                    filled.add(parts[0])
+                    rr = ws_icon.max_row + 1
+                    ws_icon.cell(row=rr, column=1, value=parts[0])
         wb.save(path)
         self.current_file = path
         self.modified = False
@@ -442,8 +862,11 @@ class DataStore:
             counter[0] += 1
             return base_ts + counter[0]
 
-        def make_folder(t, ch):
-            return {"type": "folder", "addDate": nxt(), "title": t, "children": ch}
+        def make_folder(t, ch, emoji=None):
+            node = {"type": "folder", "addDate": nxt(), "title": t, "children": ch}
+            if emoji:
+                node["emoji"] = emoji
+            return node
 
         def make_link(it):
             # 优先本地图标（磁盘存在）；其次导入时缓存的 icon（本地路径需校验文件仍存在，
@@ -460,6 +883,26 @@ class DataStore:
                 "url": it["url"],
                 "description": it["desc"],
             }
+
+        def icons_for_path(path_parts):
+            """按「最长前缀」在分类图标表里找 emoji：先试完整路径，再逐级缩短到一级，都没有返回 None。
+            例：['实用工具','AI','写作'] 命中顺序：'实用工具>AI>写作' → '实用工具>AI' → '实用工具'。"""
+            for end in range(len(path_parts), 0, -1):
+                key = SEPARATOR.join(path_parts[:end])
+                v = self.category_icons.get(key)
+                if v:
+                    return v
+            return None
+
+        def attach_icons(node, path_parts):
+            """给 folder 及其子树挂 emoji：本层优先（精确路径），子树逐层向下继承（若精确无则取父辈最长前缀）。
+            这样一级分类能单独配，二级若没单独配就沿用父级 emoji，层级展示有图标可看。"""
+            own = self.category_icons.get(SEPARATOR.join(path_parts)) or icons_for_path(path_parts)
+            if own:
+                node["emoji"] = own
+            for ch in node.get("children", []):
+                if ch.get("type") == "folder":
+                    attach_icons(ch, path_parts + [ch["title"]])
 
         # 顶层字典：一级分类名 -> (folder_node, top_order_index)
         top_order = []
@@ -493,6 +936,10 @@ class DataStore:
 
             folder_node["children"].append(make_link(it))
 
+        # 最后统一按分类图标表给所有 folder 挂 emoji
+        for f in top_order:
+            attach_icons(f, [f["title"]])
+
         return top_order
 
 
@@ -504,9 +951,42 @@ class App(tk.Tk):
         self.geometry("1280x780")
         self.minsize(1100, 650)
         self.store = DataStore()
+        self._trans_states = []          # 进行中的翻译进度窗 state 列表（用于关窗拦截）
+        self.protocol("WM_DELETE_WINDOW", self._on_main_close)
         self._build_style()
         self._build_ui()
         self._refresh_all()
+
+    # -------- 主窗口关闭拦截（翻译进行中时提醒）--------
+    def _register_trans_state(self, state):
+        """登记一个翻译进度窗 state；结束时由 _trans_state_done 移除。"""
+        self._trans_states.append(state)
+
+    def _trans_state_done(self, state):
+        try:
+            if state in self._trans_states:
+                self._trans_states.remove(state)
+        except Exception:
+            pass
+
+    def _trans_active(self):
+        """是否有翻译 worker 仍在运行（未 done 且 running）。"""
+        for st in list(self._trans_states):
+            if st.get("running") and not st.get("done"):
+                return True
+        return False
+
+    def _on_main_close(self):
+        if self._trans_active():
+            if not messagebox.askyesno(
+                "翻译进行中",
+                "仍有翻译任务在后台运行。\n已翻进度会实时写入缓存，但立即关闭窗口可能丢失"
+                "当前正在翻译的一小批（最多约 20 条）。\n\n建议先点进度窗的「停止」或等其完成。"
+                "\n确定仍要退出吗？",
+                parent=self,
+            ):
+                return
+        self.destroy()
 
     # -------- 样式 --------
     def _build_style(self):
@@ -543,6 +1023,14 @@ class App(tk.Tk):
         btn(file_box, "另存为...", self.on_save_as, style="Toolbar.TButton").pack(side=tk.LEFT, padx=2)
         self.btn_export = btn(file_box, "导出 json", self.on_export_json, style="Toolbar.TButton")
         self.btn_export.pack(side=tk.LEFT, padx=2)
+
+        # ========== 翻译 / 英文版 ==========
+        i18n_box = ttk.LabelFrame(toolbar, text="翻译", padding=4)
+        i18n_box.pack(side=tk.LEFT, padx=6)
+        btn(i18n_box, "翻译设置...", self.on_translation_settings, style="Toolbar.TButton").pack(side=tk.LEFT, padx=2)
+        btn(i18n_box, "立刻翻译", self.on_translate_incremental, style="Toolbar.TButton").pack(side=tk.LEFT, padx=2)
+        btn(i18n_box, "重译旧内容", self.on_retranslate_old, style="Toolbar.TButton").pack(side=tk.LEFT, padx=2)
+        btn(i18n_box, "导出英文 json", self.on_export_english, style="Toolbar.TButton").pack(side=tk.LEFT, padx=2)
 
         edit_box = ttk.LabelFrame(toolbar, text="编辑", padding=4)
         edit_box.pack(side=tk.LEFT, padx=6)
@@ -625,6 +1113,7 @@ class App(tk.Tk):
         self.cat_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, pady=2)
         cat_scroll.pack(side=tk.RIGHT, fill=tk.Y)
         self.cat_tree.bind("<<TreeviewSelect>>", self.on_cat_select)
+        self.cat_tree.bind("<Button-3>", self._cat_tree_on_right_click)
 
         self.body.add(left_frame, minsize=240)
 
@@ -747,9 +1236,11 @@ class App(tk.Tk):
                 # 判断该 full 是否拥有子项(直接属于它+孙子)
                 # 存在后代前缀 full+SEPARATOR 就说明有子文件夹
                 has_children = any(k.startswith(full + SEPARATOR) for k in agg.keys())
+                emoji = self._emoji_for_full(full)
+                emoji_txt = (emoji + " ") if emoji else ""
                 node_iid = self.cat_tree.insert(
                     parent_iid, tk.END,
-                    text=f"{'  ' if parent_iid != '' else ''}  {name} ({cnt})",
+                    text=f"{'  ' if parent_iid != '' else ''}  {emoji_txt}{name} ({cnt})",
                     values=(full,)
                 )
                 if has_children:
@@ -968,6 +1459,344 @@ class App(tk.Tk):
             f"图标地址已更新：{local_icons} 条引用本地 PNG（assets/logo/），"
             f"其余仍为远程地址。",
         )
+
+    # ---- 翻译 / 英文版导出 ----
+    def on_translation_settings(self):
+        """打开翻译设置对话框：选择服务商、填 Key、调速等。"""
+        try:
+            from translation import load_config, save_config
+        except ImportError:
+            messagebox.showerror("缺少依赖", "translation.py 模块缺失，请确认同级目录。")
+            return
+        cfg = load_config()
+
+        win = tk.Toplevel(self)
+        win.title("翻译设置")
+        win.geometry("520x420")
+        win.transient(self)
+        win.grab_set()
+
+        frm = ttk.Frame(win, padding=12)
+        frm.pack(fill=tk.BOTH, expand=True)
+
+        provider_var = tk.StringVar(value=cfg.get("provider", "baidu"))
+        baidu_appid = tk.StringVar(value=cfg["baidu"].get("appid", ""))
+        baidu_key = tk.StringVar(value=cfg["baidu"].get("key", ""))
+        tencent_sid = tk.StringVar(value=cfg["tencent"].get("secret_id", ""))
+        tencent_skey = tk.StringVar(value=cfg["tencent"].get("secret_key", ""))
+        qps_var = tk.StringVar(value=str(cfg.get("qps", 1)))
+
+        ttk.Label(frm, text="服务商：").grid(row=0, column=0, sticky="w", pady=4)
+        ttk.Combobox(
+            frm, textvariable=provider_var, state="readonly",
+            values=("baidu", "tencent"), width=14,
+        ).grid(row=0, column=1, sticky="w", pady=4)
+
+        ttk.Separator(frm, orient="horizontal").grid(row=1, column=0, columnspan=2, sticky="we", pady=8)
+
+        ttk.Label(frm, text="百度 APPID：").grid(row=2, column=0, sticky="w", pady=4)
+        ttk.Entry(frm, textvariable=baidu_appid, width=42).grid(row=2, column=1, sticky="we", pady=4)
+        ttk.Label(frm, text="百度 Key：").grid(row=3, column=0, sticky="w", pady=4)
+        ttk.Entry(frm, textvariable=baidu_key, width=42, show="*").grid(row=3, column=1, sticky="we", pady=4)
+
+        ttk.Separator(frm, orient="horizontal").grid(row=4, column=0, columnspan=2, sticky="we", pady=8)
+
+        ttk.Label(frm, text="腾讯 SecretId：").grid(row=5, column=0, sticky="w", pady=4)
+        ttk.Entry(frm, textvariable=tencent_sid, width=42).grid(row=5, column=1, sticky="we", pady=4)
+        ttk.Label(frm, text="腾讯 SecretKey：").grid(row=6, column=0, sticky="w", pady=4)
+        ttk.Entry(frm, textvariable=tencent_skey, width=42, show="*").grid(row=6, column=1, sticky="we", pady=4)
+
+        ttk.Separator(frm, orient="horizontal").grid(row=7, column=0, columnspan=2, sticky="we", pady=8)
+
+        ttk.Label(frm, text="QPS（每秒请求数）：").grid(row=8, column=0, sticky="w", pady=4)
+        ttk.Entry(frm, textvariable=qps_var, width=10).grid(row=8, column=1, sticky="w", pady=4)
+
+        info = ttk.LabelFrame(frm, text="说明", padding=6)
+        info.grid(row=9, column=0, columnspan=2, sticky="we", pady=8)
+        ttk.Label(
+            info,
+            text="百度通用翻译 API：https://api.fanyi.baidu.com/api/trans/vip/translate\n"
+                 "腾讯翻译君 tmt：https://cloud.tencent.com/product/tmt\n"
+                 "百度新用户约 200 万字符免费，腾讯新用户每月 5 百万字符免费。",
+            foreground="#374151", justify="left",
+        ).pack(anchor="w")
+
+        btns = ttk.Frame(frm)
+        btns.grid(row=10, column=0, columnspan=2, pady=8)
+
+        def on_save():
+            try:
+                qps = float(qps_var.get())
+            except ValueError:
+                messagebox.showerror("错误", "QPS 必须是数字")
+                return
+            new_cfg = {
+                "provider": provider_var.get(),
+                "baidu": {"appid": baidu_appid.get().strip(), "key": baidu_key.get().strip()},
+                "tencent": {"secret_id": tencent_sid.get().strip(), "secret_key": tencent_skey.get().strip()},
+                "qps": qps,
+                "retry": cfg.get("retry", 3),
+                "last_error": cfg.get("last_error", ""),
+            }
+            save_config(new_cfg)
+            messagebox.showinfo("已保存", "翻译配置已保存到 json/_translation_config.json。", parent=win)
+            win.destroy()
+
+        def on_test():
+            """快速测一下 key 是否有效。"""
+            try:
+                from translation import translate_one
+                test_cfg = {
+                    "provider": provider_var.get(),
+                    "baidu": {"appid": baidu_appid.get().strip(), "key": baidu_key.get().strip()},
+                    "tencent": {"secret_id": tencent_sid.get().strip(), "secret_key": tencent_skey.get().strip()},
+                    "retry": 1,
+                }
+                result = translate_one("你好", test_cfg)
+                messagebox.showinfo("测试成功", f"原文「你好」→ 译文「{result}」", parent=win)
+            except Exception as e:
+                messagebox.showerror("测试失败", str(e), parent=win)
+
+        ttk.Button(btns, text="测试连接", command=on_test).pack(side=tk.LEFT, padx=6)
+        ttk.Button(btns, text="保存", command=on_save).pack(side=tk.LEFT, padx=6)
+        ttk.Button(btns, text="取消", command=win.destroy).pack(side=tk.LEFT, padx=6)
+
+        frm.columnconfigure(1, weight=1)
+
+    # ============ 翻译通用 ============
+    def _translation_ready(self, cfg):
+        """检查 key 是否齐全，缺则弹窗并返回 False。"""
+        if cfg["provider"] == "baidu" and (not cfg["baidu"]["appid"] or not cfg["baidu"]["key"]):
+            messagebox.showwarning("未配置", "百度翻译 key 未填写。请先点「翻译设置...」配置。")
+            return False
+        if cfg["provider"] == "tencent" and (not cfg["tencent"]["secret_id"] or not cfg["tencent"]["secret_key"]):
+            messagebox.showwarning("未配置", "腾讯翻译 key 未填写。请先点「翻译设置...」配置。")
+            return False
+        return True
+
+    def _run_zh_file_translate(self, force_all, win_title):
+        """文件级翻译核心：以磁盘 json/pintree.json 为中文基准。
+
+        - force_all=False：增量——跳过已确认译文（含增量缓存 _translation_cache.json
+          与已有 en.json 的旧译文），只翻缺失/新增的中文。
+        - force_all=True：全量重译——忽略旧译文，清空增量缓存后全部重翻覆盖。
+        翻译过程实时把已确认译文写入 网站导航工具/_translation_cache.json 增量缓存；
+        **只有整批全部翻完且无失败/停止时**，才据此生成干净的 json/pintree.en.json。
+        中途停止/中断只保留缓存进度，不产出半成品 en.json（避免中文残留）。
+        中文源文件缺失时返回 False 并提示。
+        """
+        try:
+            from translation import load_config
+        except ImportError:
+            messagebox.showerror("缺少依赖", "translation.py 模块缺失，请确认同级目录。")
+            return False
+        cfg = load_config()
+        if not self._translation_ready(cfg):
+            return False
+
+        zh_path = _zh_json_path()
+        if not os.path.isfile(zh_path):
+            messagebox.showwarning("缺少中文源", "未找到中文基准文件:\n" + zh_path +
+                                   "\n\n请先在工具里导入数据并「导出 json」到该路径。")
+            return False
+        try:
+            with open(zh_path, "r", encoding="utf-8") as f:
+                zh_data = json.load(f)
+        except Exception as e:
+            messagebox.showerror("读取失败", "读取 " + zh_path + " 出错:\n" + str(e))
+            return False
+
+        # 全部需翻译的中文（去重保序）
+        all_texts = _collect_texts_unique(zh_data)
+        if not all_texts:
+            messagebox.showinfo("无内容", "中文文件中没有需要翻译的文本。")
+            return False
+
+        en_path = _en_json_path()
+
+        # 构建『已确认译文』缓存：增量缓存 优先，其次已有 en.json 的旧译文。
+        cache = _load_trans_cache()
+        if force_all:
+            # 全量重译：丢弃旧译文与旧缓存，从零翻
+            cache = {}
+            _save_trans_cache(cache)
+        else:
+            # 增量：把旧 en.json 里能对齐的译文并入缓存，避免重复翻
+            if os.path.isfile(en_path):
+                en_data = _load_json_or_none(en_path)
+                if en_data is not None:
+                    old = _build_cache_from_pair(zh_data, en_data)
+                    for k, v in old.items():
+                        cache.setdefault(k, v)   # 增量缓存优先，不覆盖更新过的译文
+        need = [t for t in all_texts if not cache.get(t)]
+
+        progress_win, log_box = _make_progress_window(self, win_title)
+        pwin = progress_win["win"]
+        progress_win["running"] = True   # worker 启动前标记运行中
+        self._register_trans_state(progress_win)
+
+        def _logm(m):
+            _log(pwin, log_box, m)
+
+        def _prog(done, total):
+            _set_progress(progress_win, done, total)
+
+        def _worker():
+            try:
+                if need:
+                    _logm("需翻译 %d 条（缓存命中 %d 条）" % (len(need), len(all_texts) - len(need)))
+                    mapping, _cache, n_failed, stopped = _translate_batches_persist(
+                        need, cache, cfg, src="zh", dst="en",
+                        batch=20, log_callback=_logm,
+                        progress_cb=_prog,
+                        stop_flag=lambda: progress_win["stop"],
+                    )
+                    # cache 已在函数内就地补充，统一为最新
+                    mapping = {t: cache.get(t) or t for t in all_texts}
+                    if stopped:
+                        _logm("⏹ 已停止。已确认译文已存入增量缓存，未生成 en.json。")
+                        _logm("下次「立刻翻译」会从缓存自动续翻。")
+                        return
+                    if n_failed:
+                        _logm("⚠ 有 %d 条翻译失败，未生成 en.json（可再次点「立刻翻译」重试失败项）。" % n_failed)
+                        return
+                else:
+                    _logm("全部命中缓存，无需调用接口。")
+                    mapping = {t: cache.get(t) or t for t in all_texts}
+                    _prog(1, 0)   # 拉满进度条
+
+                # 全部翻完且无失败 → 生成干净 en.json
+                en_new = _remap_zh_tree_to_en(zh_data, mapping)
+                os.makedirs(os.path.dirname(en_path), exist_ok=True)
+                with open(en_path, "w", encoding="utf-8") as f:
+                    json.dump(en_new, f, ensure_ascii=False, indent=2)
+                _logm("已写入: " + en_path)
+                _logm("✅ 完成！")
+            except Exception as e:
+                _logm("❌ 失败: " + str(e))
+                _save_trans_cache(cache)   # 无论如何尽量保存已确认译文
+            finally:
+                progress_win["running"] = False
+                progress_win["done"] = True
+                self._trans_state_done(progress_win)
+                _finish_when_idle(pwin, _logm, delay=600)
+
+        threading.Thread(target=_worker, daemon=True).start()
+        return True
+
+    def on_translate_incremental(self):
+        """立刻翻译：以磁盘 pintree.json 为中文基准，对比 en.json，只翻新增/缺失部分。"""
+        self._run_zh_file_translate(force_all=False, win_title="立刻翻译")
+
+    def on_retranslate_old(self):
+        """重译旧内容：以磁盘 pintree.json 为中文基准，忽略旧译文全量重新翻译并覆盖 en.json。"""
+        if not messagebox.askyesno(
+            "确认重译",
+            "将以磁盘 json/pintree.json 为中文基准，清空已有的翻译缓存与旧译文，"
+            "对全部内容重新调用接口并覆盖 json/pintree.en.json。\n"
+            "原有译文与缓存进度会丢失，确认继续？",
+        ):
+            return
+        self._run_zh_file_translate(force_all=True, win_title="重译旧内容")
+
+    def on_export_english(self):
+        """导出英文 json：基于内存当前数据（含刚改动/新增条目）翻译后，
+        只生成 json/pintree.en.json（不再连带生成 en.html）。"""
+        if not self.store.items:
+            messagebox.showwarning("没有数据", "请先导入 Excel 或添加数据。")
+            return
+        try:
+            from translation import load_config, translate_many
+        except ImportError:
+            messagebox.showerror("缺少依赖", "translation.py 模块缺失，请确认同级目录。")
+            return
+        cfg = load_config()
+        if not self._translation_ready(cfg):
+            return
+
+        # 收集内存数据里所有需翻译字符串（去重保序）
+        order = []
+        _seen = set()
+        for it in self.store.items:
+            cat = it.get("category") or ""
+            for part in [p.strip() for p in cat.split(SEPARATOR) if p.strip()]:
+                if part not in _seen:
+                    _seen.add(part)
+                    order.append(part)
+            for fld in ("name", "desc"):
+                v = it.get(fld) or ""
+                if v and v not in _seen:
+                    _seen.add(v)
+                    order.append(v)
+
+        # 已确认译文缓存：增量缓存 优先，其次磁盘 en.json 的旧译文
+        cache = _load_trans_cache()
+        en_path = _en_json_path()
+        if os.path.isfile(en_path) and os.path.isfile(_zh_json_path()):
+            try:
+                with open(en_path, "r", encoding="utf-8") as f:
+                    en_data = json.load(f)
+                with open(_zh_json_path(), "r", encoding="utf-8") as f:
+                    zh_data = json.load(f)
+                old = _build_cache_from_pair(zh_data, en_data)
+                for k, v in old.items():
+                    cache.setdefault(k, v)
+            except Exception:
+                pass
+
+        need = [t for t in order if not cache.get(t)]
+
+        progress_win, log_box = _make_progress_window(self, "导出英文 json")
+        pwin = progress_win["win"]
+        progress_win["running"] = True
+        self._register_trans_state(progress_win)
+
+        def _logm(m):
+            _log(pwin, log_box, m)
+
+        def _prog(done, total):
+            _set_progress(progress_win, done, total)
+
+        def _worker():
+            try:
+                if need:
+                    _logm("需翻译 %d 条（缓存命中 %d 条）" % (len(need), len(order) - len(need)))
+                    _mapping, _c, n_failed, stopped = _translate_batches_persist(
+                        need, cache, cfg, src="zh", dst="en",
+                        batch=20, log_callback=_logm,
+                        progress_cb=_prog,
+                        stop_flag=lambda: progress_win["stop"],
+                    )
+                    if stopped:
+                        _logm("⏹ 已停止。已确认译文已存入增量缓存，未生成 en.json。")
+                        _logm("下次可再次点「导出英文 json」从缓存续翻。")
+                        return
+                    if n_failed:
+                        _logm("⚠ 有 %d 条翻译失败，未生成 en.json（可再次点「导出英文 json」重试失败项）。" % n_failed)
+                        return
+                else:
+                    _logm("全部命中缓存，无需调用接口。")
+                    _prog(1, 0)   # 拉满进度条
+
+                # 全部确认 → 生成干净 en.json（mapping 覆盖全部 order）
+                mapping = {t: cache.get(t) or t for t in order}
+                data_en = _build_en_json(self.store, mapping)
+                os.makedirs(os.path.dirname(en_path), exist_ok=True)
+                with open(en_path, "w", encoding="utf-8") as f:
+                    json.dump(data_en, f, ensure_ascii=False, indent=2)
+                _logm("已写入: " + en_path)
+                _logm("✅ 完成！")
+            except Exception as e:
+                _logm("❌ 失败: " + str(e))
+                _save_trans_cache(cache)
+            finally:
+                progress_win["running"] = False
+                progress_win["done"] = True
+                self._trans_state_done(progress_win)
+                _finish_when_idle(pwin, delay=600)
+
+        threading.Thread(target=_worker, daemon=True).start()
+
 
     # ---- 增删改 ----
     def _sel_store_indices(self, scope=None):
@@ -1324,6 +2153,77 @@ class App(tk.Tk):
         self.set_status("已按导入时的原始表格顺序恢复分类排序。")
 
     # ---- 其它 ----
+    def _emoji_for_full(self, full):
+        """按『最长前缀』在 category_icons 里找该分类路径对应的 emoji；没有返回空串。"""
+        if not full:
+            return ""
+        parts = [p for p in full.split(SEPARATOR) if p]
+        for end in range(len(parts), 0, -1):
+            key = SEPARATOR.join(parts[:end])
+            v = self.store.category_icons.get(key)
+            if v:
+                return v
+        return ""
+
+    def _cat_tree_on_right_click(self, evt):
+        """左侧分类树右键：选中一级/二级分类后，提供「设置 / 清除 emoji」。"""
+        iid = self.cat_tree.identify_row(evt.y)
+        if not iid:
+            return
+        vals = self.cat_tree.item(iid, "values")
+        if not vals or vals[0] == "__ALL__":
+            return
+        self.cat_tree.selection_set(iid)
+        full = vals[0]
+        menu = tk.Menu(self, tearoff=0)
+        menu.add_command(label="设置 emoji…", command=lambda: self.on_set_category_emoji(full))
+        menu.add_command(label="清除 emoji", command=lambda: self.on_clear_category_emoji(full))
+        try:
+            menu.tk_popup(evt.x_root, evt.y_root)
+        finally:
+            menu.grab_release()
+
+    def _current_cat_full(self):
+        sel = self.cat_tree.selection()
+        if not sel:
+            return None
+        v = self.cat_tree.item(sel[0], "values")
+        return v[0] if v and v[0] != "__ALL__" else None
+
+    def on_set_category_emoji(self, full=None):
+        """给一级/二级分类设置 emoji：输入单个 emoji（可 Win+; 或复制粘贴）。"""
+        full = full or self._current_cat_full()
+        if not full:
+            messagebox.showinfo("提示", "请先在左侧选中一个分类（非“全部站点”）。")
+            return
+        cur = self.store.category_icons.get(full, "")
+        res = simpledialog.askstring(
+            "设置 emoji",
+            f"分类：{full}\n当前 emoji：{cur or '（无）'}\n\n"
+            "请输入 1 个 emoji（如 🔍、🎨、🛠）。\n清空可输入单个空格或直接点「清除 emoji」。",
+            initialvalue=cur,
+        )
+        if res is None:
+            return
+        res = res.strip()
+        if not res:
+            self.store.category_icons.pop(full, None)
+        else:
+            # 只取首个完整 emoji（用户可能粘贴了带描述文字的内容）
+            self.store.category_icons[full] = res[:4] if res else ""
+        self.store.modified = True
+        self._refresh_categories()
+        self.set_status(f"分类 '{full}' 的 emoji 已更新。保存(Excel)或导出 json 后生效。")
+
+    def on_clear_category_emoji(self, full=None):
+        full = full or self._current_cat_full()
+        if not full:
+            return
+        self.store.category_icons.pop(full, None)
+        self.store.modified = True
+        self._refresh_categories()
+        self.set_status(f"已清除分类 '{full}' 的 emoji。")
+
     def on_cat_select(self, _evt):
         self._refresh_table()
 

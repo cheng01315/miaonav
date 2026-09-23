@@ -1,137 +1,105 @@
-# MeowTool Nav (miaonav)
+# Meow Toolkit · Website Navigation (miaonav)
 
 > 🌐 Language: [中文](./README.md)
 
-> A curated "tool website directory" generated from bookmarks, with category tiling, tag-linked filtering, dark mode and a local visual editor.
+A static, bookmark-generated "curated web tools directory" featuring category tiling, linked tag filtering, dark mode and a bilingual Chinese/English UI, plus a desktop visual editor.
 
 - 🌐 Live demo: **https://www.meowtool.com/miaonav**
-- 🍴 Forked from: **https://github.com/Pintree-io/pintree/tree/pintree-old-pages**   (Pintree legacy `pintree-old-pages` branch)
+- 🍴 Forked from: [Pintree, `pintree-old-pages` branch](https://github.com/Pintree-io/pintree/tree/pintree-old-pages)
 - ✍️ Author: Cheng
 
 ---
 
-## 1. Introduction
+## 1. Features
 
-This project is a derivative work built on the **Pintree** `pintree-old-pages` branch. The original Pintree turns browser bookmarks into a navigation website. On top of that, this fork ships a **productized, Chinese-user-oriented** redesign:
+**Navigation pages (`index.html` / `en.html`)**
 
-- A redesigned homepage (category tiling + two/three-level tag-linked filtering + scroll-spy highlighting);
-- A brand-new **desktop visual editor** so you can manage the directory without installing a browser extension or hand-writing JSON;
-- Polished branding, SEO and analytics, ready to publish.
+- Bilingual: two same-source pages with a one-click language toggle, plus canonical / hreflang tags
+- Homepage tiled into 9 top-level categories, each with an emoji and a site count; sidebar scroll-spy highlights the active category
+- Two/three-level linked tag filtering; each section previews 18 sites and offers a "View more" detail page (breadcrumbs + recursive grouping)
+- Search matches both site titles and descriptions; a sticky mobile search bar and a two-column mobile card layout are included
+- Dark-mode preference is persisted in `localStorage` and survives language switches without flashing
+- All site icons are served locally from `assets/logo/`, falling back to a default placeholder on error
 
----
+**Desktop editor (`Website navigation tool/`)**
 
-## 2. Differences from the original Pintree (what's new)
+- Import / export Excel (`.xlsx`) and JSON; table-based editing, searching and sorting
+- One-click export of Pintree-compatible `pintree.json`; multi-source favicon downloader converts icons to PNG
+- Visual category emoji management (right-click "Set emoji…"; written into JSON on export)
+- Built-in Baidu / Tencent translation incrementally produces `pintree.en.json` (batched disk writes; interrupted jobs resume)
 
-### V1.0.1
+**Also included**
 
-https://github.com/cheng01315/miaonav/tree/v1.01_miaonav
-
-Release Date: 2026.9.3
-
-**1. Mobile Search Box (New)**
-
-- Added a **sticky search bar** (`lg:hidden`, visible only on small screens) below the top bar, featuring a search icon + a "Clear" button, with search triggered by pressing Enter.
-- Logic reuses the desktop `searchBookmarks` / `clearSearchResults` functions, with **input content synced across both ends**; clearing one also clears the other.
-- Detail tweaks: The magnifying glass icon first received `my-auto` to fix vertical centering, and was then **completely removed** as per your request, with left padding reduced from `pl-9` to `pl-4` for a cleaner look.
-- Also addresses a historical gap: the 640–1024px range previously had no search box at all, now covered by this mobile search bar.
-
-**2. Mobile Card Layout (New Adaptation)**
-
-- Within `@media (max-width:640px)`, changed the grid from `auto-fill minmax(210px,1fr)` to a fixed **`repeat(2, 1fr)`**, i.e., 2 cards per row on phones.
-- Supporting adjustments: reduced card padding, icon size (40→32px), and description truncated to 1 line; category jump `scroll-margin-top` adjusted to 8.5rem to prevent titles from being obscured by the sticky search bar.
-
-**3. SEO (Basic Completion)**
-
-- The homepage previously had **no H1 at all**; the desktop sidebar brand name "Meow Tools Collection" has been upgraded to the **page's single `<h1>`**.
-- The same text in the mobile top bar / drawer menu remains as `<a>` to avoid duplicate H1s diluting SEO weight.
-
-**Files Involved**
-
-- `index.html`: mobile search box DOM, H1 heading
-- `css/styles.css`: mobile 2-column grid + card adaptations
-
-
-
-### V1.0.1
-
-Release Date: 2026.8.27
-
-| Area | Original Pintree (pintree-old-pages) | This fork (miaonav) |
-| --- | --- | --- |
-| Editing data | Must install the "Pintree Bookmarks Exporter" Chrome extension, export a JSON, then manually replace `json/pintree.json` | Ships a **desktop GUI editor** (`Website navigation tool/Website navigation tool.py`) — import Excel/JSON, edit visually, sort, one-click export |
-| Icon fetching | Relies on remote favicon URLs | Built-in **multi-source favicon downloader** (Google / faviconkit / Yandex / favicon.im fallback), downloads locally to `assets/logo/` and unifies to PNG |
-| Homepage layout | Folder-card grid / bookmark list | **Category-tile homepage**: each category has an emoji icon and a site count |
-| Filtering | Minimal | Per-category **secondary tags + expandable third-level linked tags**, 18-item preview + "View more" detail page |
-| Navigation UX | Plain sidebar | Sidebar **scroll-spy highlighting** of the active category; detail pages with breadcrumbs and recursive grouping |
-| Data fields | title / url / icon | Adds a **description field** (shown as a two-line card summary) |
-| Branding & visuals | Generic Pintree skin | New "喵喵工具集 / meowtool" brand, custom logo, favicon, OG image, full `.mn-*` custom styles |
-| Analytics | None | Umami + Google Analytics + Microsoft Clarity |
-| SEO / compliance | Basic meta | Full canonical / Open Graph / Twitter Card |
-
-### Highlights of the new capabilities
-
-1. **Desktop visual editor (`Website navigation tool/Website navigation tool.py`)**
-   - Import / export Excel (`.xlsx`) and JSON;
-   - Table-based add / delete / edit of entries;
-   - Search and filter;
-   - Category sorting and link sorting (move up / down / top / bottom);
-   - One-click export to Pintree-compatible `pintree.json`;
-   - Auto-detects `assets/logo` under the project root and manages icons.
-   - Dependencies: `openpyxl` (Excel), `requests` (icon download), `Pillow` (icon to PNG). Run with:
-     ```bash
-     pip install openpyxl requests pillow
-     python "Website navigation tool/Website navigation tool.py"
-     ```
-
-2. **Category tiling + tag-linked filtering**
-   - The homepage lays out top-level categories as tiled sections, each with an emoji icon and a total site count;
-   - Each section shows a secondary-tag (sub-category) row that expands into third-level tags, forming a two/three-level linkage;
-   - Each section previews the first 18 sites; "View more" opens the full detail page (breadcrumbs + recursive grouping).
-
-3. **Scroll-spy highlighting**
-   - An `IntersectionObserver` auto-highlights the corresponding sidebar category while scrolling the homepage, improving orientation in long lists.
-
-4. **Local & unified icons**
-   - The editor auto-downloads site favicons into `assets/logo/`, unifies them to PNG, removing the dependency on third-party realtime services for faster, more stable loads.
+- Full SEO tags (canonical / Open Graph / Twitter Card)
+- Umami, Google Analytics and Microsoft Clarity analytics
 
 ---
 
-## 3. Project structure
+## 2. Project structure
 
 ```
 miaonav/
-├── index.html                 # Main navigation page (tiled home + tag filter + detail)
+├── index.html                     # Chinese navigation page
+├── en.html                        # English navigation page (same source, kept in sync manually)
 ├── css/
-│   ├── styles.css            # Custom styles (includes the new .mn-* series)
-│   └── tailwind.css          # Tailwind build output
+│   ├── styles.css                 # Custom styles (.mn-* series + mobile adaptations)
+│   └── tailwind.css               # Tailwind build output
 ├── json/
-│   └── pintree.json          # Directory data (categories / links / icons / descriptions)
+│   ├── pintree.json               # Chinese directory data (9 top-level categories, with emoji)
+│   ├── pintree.en.json            # English directory data (produced by the translator)
+│   └── _translation_config.json   # Translation API credentials (see notes below; never publish)
 ├── assets/
-│   ├── logo.svg              # Site logo
-│   ├── og.webp               # Social share image
-│   ├── favicon/              # Site favicon assets
-│   ├── logo/                 # Per-site icons (downloaded by the editor)
-│   └── default-icon.svg      # Fallback placeholder when an icon is missing
+│   ├── logo.svg                   # Site logo
+│   ├── og.webp                    # Social share image
+│   ├── favicon/                   # Site favicons
+│   ├── default-icon.svg           # Placeholder when a site icon fails to load
+│   └── logo/                      # Per-site icons (local PNGs)
 └── Website navigation tool/
-    └── Website navigation tool.py   # Desktop visual editor (new)
+    ├── Website navigation tool.py # Desktop visual editor (Tkinter)
+    ├── translation.py             # Baidu / Tencent translation API wrapper
+    └── _translation_cache.json    # Incremental translation cache (auto-generated at runtime)
 ```
 
 ---
 
-## 4. Usage
+## 3. Quick start
 
-### Option A: Desktop editor (recommended)
-1. Install deps: `pip install openpyxl requests pillow`
-2. Run `Website navigation tool/Website navigation tool.py`
-3. Import existing `json/pintree.json` or an Excel file, edit and sort
-4. Click "导出 json" to produce `json/pintree.json`; refresh the page
+### 1. Local preview
 
-### Option B: Edit JSON manually (compatible with original)
-Edit `json/pintree.json` following the Pintree structure:
+The pages load JSON via `fetch`, so serve them over HTTP (don't open `file://` directly):
+
+```bash
+python -m http.server 8000
+# Chinese: http://localhost:8000/index.html
+# English: http://localhost:8000/en.html
+```
+
+### 2. Desktop editor (recommended)
+
+```bash
+pip install openpyxl requests pillow
+python "Website navigation tool/Website navigation tool.py"
+```
+
+1. Import the existing `json/pintree.json` or an Excel file, then edit, sort and assign emoji
+2. Click "Export JSON" to generate `json/pintree.json`; refresh the page to see changes
+3. The translation toolbar has 4 buttons:
+   - **Translation settings…**: choose a provider (Baidu / Tencent), enter APPID/secret, set QPS rate, test the connection
+   - **Translate now**: translates only new/missing entries against the Chinese JSON (incremental)
+   - **Re-translate all**: clears the cache and fully re-translates, overwriting the English JSON
+   - **Export English JSON**: translates the current in-memory data and outputs only `pintree.en.json`
+
+> 🔑 Credentials live in `json/_translation_config.json` — replace them with your own Baidu / Tencent keys. The file contains secrets; in a public repo, untrack it from Git.
+
+### 3. Manual JSON editing
+
+The data follows the Pintree bookmark structure:
+
 ```json
 {
   "type": "folder",
   "title": "Search Tools",
+  "emoji": "🔍",
   "children": [
     {
       "type": "link",
@@ -144,25 +112,41 @@ Edit `json/pintree.json` following the Pintree structure:
 }
 ```
 
-### Local preview
-For browser security reasons, serve over a local HTTP server (don't open `index.html` via `file://`):
-```bash
-python -m http.server 8000
-# open http://localhost:8000
-```
+### 4. Deployment
 
-### Deploy
-Host the whole directory (`index.html`, `css/`, `json/`, `assets/`) on any static host. The live version runs at **https://www.meowtool.com/miaonav**.
+Purely static — upload the whole directory to any static host. Every local resource (CSS / JS / images / JSON / inter-page links) uses relative paths, so the site works at the domain root or any subpath. Third-party analytics scripts and SEO canonical links are absolute URLs, as required.
+
+---
+
+## 4. Changelog
+
+### V2.0.0 (2026-09-23)
+
+- Translation upgrade: Baidu / Tencent providers and 4 toolbar buttons; the incremental cache is written atomically per batch, so interrupted/stopped jobs can resume without producing a dirty file; the progress window gained a progress bar
+- New English page `en.html` with a language-toggle pill and full I18N of runtime strings
+- Category icons now come from the JSON `emoji` field (configured for all 9 top-level categories)
+- Dark-mode preference is persisted, so full-page language switches no longer flash back to light mode
+- Search now matches site descriptions as well as titles
+- All site icons and footer images are local relative references; the hardcoded `<base href="/miaonav/">` was removed
+
+### V1.0.1 (2026-09-03)
+
+- Added a sticky mobile search bar with content synced to the desktop box
+- Two-card-per-row layout on phones, with tighter icons and spacing
+- SEO fix: the sidebar brand name is now the page's single H1
+
+### V1.0.0 (2026-08-27) | [Tag](https://github.com/cheng01315/miaonav/tree/v1.01_miaonav)
+
+First fork release: desktop visual editor, tiled homepage with tag filtering, scroll-spy sidebar, localized icons, the description field, custom branding and analytics.
 
 ---
 
 ## 5. Acknowledgements
 
-- The page skeleton and data format are derived from **Pintree** ([pintree-old-pages](https://github.com/Pintree-io/pintree/tree/pintree-old-pages)). Thanks to the original authors.
-- The original project is released under the **MIT License**; this fork keeps the same license.
+The page skeleton and data format are derived from **Pintree** ([pintree-old-pages](https://github.com/Pintree-io/pintree/tree/pintree-old-pages)). Thanks to the original authors.
 
 ---
 
 ## 6. License
 
-MIT License — modified from Pintree. Please retain the original author and project attribution.
+MIT License — modified and redistributed from Pintree. Please retain the original author and project attribution.
