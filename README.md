@@ -28,11 +28,7 @@
 - 一键导出符合 Pintree 结构的 `pintree.json`，多源 favicon 自动下载并统一转 PNG
 - 分类 emoji 可视化设置（右键「设置 emoji…」，导出时写入 JSON）
 - 内置百度 / 腾讯翻译，增量翻译生成 `pintree.en.json`（边翻边落盘、中断可续翻）
-
-**其他**
-
 - 完善的 SEO 标签（canonical / Open Graph / Twitter Card）
-- 集成 Umami、Google Analytics、Microsoft Clarity 统计
 
 ---
 
