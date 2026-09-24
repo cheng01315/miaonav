@@ -27,6 +27,7 @@ A static, bookmark-generated "curated web tools directory" featuring category ti
 - One-click export of Pintree-compatible `pintree.json`; multi-source favicon downloader converts icons to PNG
 - Visual category emoji management (right-click "Set emoji…"; written into JSON on export)
 - Built-in Baidu / Tencent translation incrementally produces `pintree.en.json` (batched disk writes; interrupted jobs resume)
+- Ships in both a Chinese-UI build (`Website navigation tool.py`) and an English-UI build (`Website navigation tool EN.py`); the two are feature-equivalent
 
 **Also included**
 
@@ -55,9 +56,10 @@ miaonav/
 │   ├── default-icon.svg           # Placeholder when a site icon fails to load
 │   └── logo/                      # Per-site icons (local PNGs)
 └── Website navigation tool/
-    ├── Website navigation tool.py # Desktop visual editor (Tkinter)
-    ├── translation.py             # Baidu / Tencent translation API wrapper
-    └── _translation_cache.json    # Incremental translation cache (auto-generated at runtime)
+    ├── Website navigation tool.py     # Desktop visual editor (Tkinter, Chinese UI)
+    ├── Website navigation tool EN.py  # Desktop visual editor (Tkinter, English UI)
+    ├── translation.py                 # Baidu / Tencent translation API wrapper
+    └── _translation_cache.json        # Incremental translation cache (auto-generated at runtime)
 ```
 
 ---
@@ -79,6 +81,8 @@ python -m http.server 8000
 ```bash
 pip install openpyxl requests pillow
 python "Website navigation tool/Website navigation tool.py"
+# For the English UI, use instead:
+python "Website navigation tool/Website navigation tool EN.py"
 ```
 
 1. Import the existing `json/pintree.json` or an Excel file, then edit, sort and assign emoji
@@ -119,6 +123,10 @@ Purely static — upload the whole directory to any static host. Every local res
 ---
 
 ## 4. Changelog
+
+### V2.1.0 (2026-09-24)
+
+- Added an English-UI desktop editor `Website navigation tool EN.py`: feature-equivalent to the Chinese build (`Website navigation tool.py`) with a fully English interface, for non-Chinese users
 
 ### V2.0.0 (2026-09-23)
 

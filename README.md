@@ -27,6 +27,7 @@
 - 一键导出符合 Pintree 结构的 `pintree.json`，多源 favicon 自动下载并统一转 PNG
 - 分类 emoji 可视化设置（右键「设置 emoji…」，导出时写入 JSON）
 - 内置百度 / 腾讯翻译，增量翻译生成 `pintree.en.json`（边翻边落盘、中断可续翻）
+- 提供中文界面版（`Website navigation tool.py`）与英文界面版（`Website navigation tool EN.py`），两者功能完全一致
 
 **其他**
 
@@ -55,9 +56,10 @@ miaonav/
 │   ├── default-icon.svg           # 站点图标加载失败时的占位图
 │   └── logo/                      # 各网站图标（本地 PNG）
 └── Website navigation tool/
-    ├── Website navigation tool.py # 桌面可视化编辑工具（Tkinter）
-    ├── translation.py             # 百度 / 腾讯翻译接口封装
-    └── _translation_cache.json    # 增量翻译缓存（运行时自动生成）
+    ├── Website navigation tool.py     # 桌面可视化编辑工具（Tkinter，中文界面）
+    ├── Website navigation tool EN.py  # 桌面可视化编辑工具（Tkinter，英文界面）
+    ├── translation.py                 # 百度 / 腾讯翻译接口封装
+    └── _translation_cache.json        # 增量翻译缓存（运行时自动生成）
 ```
 
 ---
@@ -79,6 +81,8 @@ python -m http.server 8000
 ```bash
 pip install openpyxl requests pillow
 python "Website navigation tool/Website navigation tool.py"
+# 需要英文界面时改用：
+python "Website navigation tool/Website navigation tool EN.py"
 ```
 
 1. 导入现有 `json/pintree.json` 或 Excel，进行编辑、排序、设置 emoji
@@ -119,6 +123,10 @@ python "Website navigation tool/Website navigation tool.py"
 ---
 
 ## 四、更新日志
+
+### V2.1.0（2026-09-24）
+
+- 新增英文界面版桌面编辑工具 `Website navigation tool EN.py`：与中文版（`Website navigation tool.py`）功能完全一致，UI 全英文，方便非中文用户使用
 
 ### V2.0.0（2026-09-23）
 
