@@ -29,10 +29,6 @@ A static, bookmark-generated "curated web tools directory" featuring category ti
 - Visual category emoji management (right-click "Set emoji…"; written into JSON on export)
 - Built-in Baidu / Tencent translation incrementally produces `pintree.en.json` (batched disk writes; interrupted jobs resume)
 - Ships in both a Chinese-UI build (`Website navigation tool.py`) and an English-UI build (`Website navigation tool EN.py`); the two are feature-equivalent
-
-**Also included**
-
-- Full SEO tags (canonical / Open Graph / Twitter Card)
 - Umami, Google Analytics and Microsoft Clarity analytics
 
 ---
