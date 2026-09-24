@@ -4,6 +4,7 @@
 
 A static, bookmark-generated "curated web tools directory" featuring category tiling, linked tag filtering, dark mode and a bilingual Chinese/English UI, plus a desktop visual editor.
 
+- 🌐 Version without English pagination: https://github.com/cheng01315/miaonav/tree/v1.01_miaonav
 - 🌐 Live demo: **https://www.meowtool.com/miaonav**
 - 🍴 Forked from: [Pintree, `pintree-old-pages` branch](https://github.com/Pintree-io/pintree/tree/pintree-old-pages)
 - ✍️ Author: Cheng
@@ -143,7 +144,7 @@ Purely static — upload the whole directory to any static host. Every local res
 - Two-card-per-row layout on phones, with tighter icons and spacing
 - SEO fix: the sidebar brand name is now the page's single H1
 
-### V1.0.0 (2026-08-27) | [Tag](https://github.com/cheng01315/miaonav/tree/v1.01_miaonav)
+### V1.0.0 (2026-08-27) 
 
 First fork release: desktop visual editor, tiled homepage with tag filtering, scroll-spy sidebar, localized icons, the description field, custom branding and analytics.
 

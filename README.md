@@ -4,6 +4,7 @@
 
 一个由浏览器书签生成的静态「精选工具网站导航页」，支持分类平铺、标签联动筛选、暗色模式、中英双语，并附带一个桌面可视化编辑工具。
 
+- 🌐 无英语分页版本：**https://github.com/cheng01315/miaonav/tree/v1.01_miaonav**
 - 🌐 在线演示：**https://www.meowtool.com/miaonav**
 - 🍴 派生自：[Pintree `pintree-old-pages` 分支](https://github.com/Pintree-io/pintree/tree/pintree-old-pages)
 - ✍️ 作者：Cheng
@@ -27,12 +28,14 @@
 - 一键导出符合 Pintree 结构的 `pintree.json`，多源 favicon 自动下载并统一转 PNG
 - 分类 emoji 可视化设置（右键「设置 emoji…」，导出时写入 JSON）
 - 内置百度 / 腾讯翻译，增量翻译生成 `pintree.en.json`（边翻边落盘、中断可续翻）
+<<<<<<< HEAD
 - 提供中文界面版（`Website navigation tool.py`）与英文界面版（`Website navigation tool EN.py`），两者功能完全一致
 
 **其他**
 
+=======
+>>>>>>> 02bac6d959ad3c5c9a70ef47ce184a888324b2f4
 - 完善的 SEO 标签（canonical / Open Graph / Twitter Card）
-- 集成 Umami、Google Analytics、Microsoft Clarity 统计
 
 ---
 
@@ -143,7 +146,7 @@ python "Website navigation tool/Website navigation tool EN.py"
 - 手机端卡片改为每行 2 列，并收紧图标与间距
 - 补全 SEO：侧边栏品牌名设为全页唯一 H1
 
-### V1.0.0（2026-08-27）｜[标签](https://github.com/cheng01315/miaonav/tree/v1.01_miaonav)
+### V1.0.0（2026-08-27）
 
 首个 fork 版本：桌面可视化编辑工具、首页分类平铺与标签筛选、scroll-spy 侧边栏、图标本地化、description 字段、品牌视觉与统计埋点。
 
