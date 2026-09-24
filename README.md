@@ -30,11 +30,6 @@
 - 内置百度 / 腾讯翻译，增量翻译生成 `pintree.en.json`（边翻边落盘、中断可续翻）
 <<<<<<< HEAD
 - 提供中文界面版（`Website navigation tool.py`）与英文界面版（`Website navigation tool EN.py`），两者功能完全一致
-
-**其他**
-
-=======
->>>>>>> 02bac6d959ad3c5c9a70ef47ce184a888324b2f4
 - 完善的 SEO 标签（canonical / Open Graph / Twitter Card）
 
 ---
